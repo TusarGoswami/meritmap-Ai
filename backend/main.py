@@ -39,6 +39,21 @@ app = FastAPI(
 _runs: dict[str, PipelineState] = {}
 
 
+def _parse_list_input(raw: Optional[str]) -> list[str]:
+    """Parse a field that can be a JSON array string, comma-separated string, or newline-separated."""
+    if not raw or not raw.strip():
+        return []
+    s = raw.strip()
+    if s.startswith("[") and s.endswith("]"):
+        try:
+            parsed = json.loads(s)
+            if isinstance(parsed, list):
+                return [str(x).strip() for x in parsed if str(x).strip()]
+        except Exception:
+            pass
+    return [x.strip() for x in s.replace("\n", ",").split(",") if x.strip()]
+
+
 # ─── API Routes ────────────────────────────────────────────────────────────
 
 @app.post("/api/run", response_model=RunResponse)
@@ -47,10 +62,10 @@ async def start_run(
     resume: Optional[UploadFile] = File(None),
     marksheet: Optional[UploadFile] = File(None),
     github_username: Optional[str] = Form(None),
-    extra_urls: Optional[str] = Form(None),  # JSON array string
-    target_countries: Optional[str] = Form(None),  # JSON array string
+    extra_urls: Optional[str] = Form(None),  # JSON array string or comma-separated
+    target_countries: Optional[str] = Form(None),  # JSON array string or comma-separated
     target_degree_level: Optional[str] = Form(None),
-    target_fields: Optional[str] = Form(None),  # JSON array string
+    target_fields: Optional[str] = Form(None),  # JSON array string or comma-separated
     budget_max_yearly_usd: Optional[float] = Form(None),
     needs_full_funding: bool = Form(False),
     chaos_mode: bool = Form(False),
@@ -81,13 +96,18 @@ async def start_run(
         content = await marksheet.read()
         Path(marksheet_path).write_bytes(content)
 
-    # Parse JSON array fields
-    countries = json.loads(target_countries) if target_countries else []
-    fields = json.loads(target_fields) if target_fields else []
-    urls = json.loads(extra_urls) if extra_urls else []
+    # Safely parse array / list fields (supports JSON array or comma-separated strings)
+    countries = _parse_list_input(target_countries)
+    fields = _parse_list_input(target_fields)
+    urls = _parse_list_input(extra_urls)
     scores = []
     if test_scores_json:
-        scores = [TestScore(**s) for s in json.loads(test_scores_json)]
+        try:
+            parsed_scores = json.loads(test_scores_json)
+            if isinstance(parsed_scores, list):
+                scores = [TestScore(**s) for s in parsed_scores if isinstance(s, dict)]
+        except Exception:
+            scores = []
 
     # Build initial state
     state = PipelineState(

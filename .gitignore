@@ -12,6 +12,7 @@ venv/
 
 # Runs
 runs/*.json
+runs/*/
 !runs/cli-rahul-shar.json
 !runs/cli-elena-rost.json
 !runs/.gitkeep

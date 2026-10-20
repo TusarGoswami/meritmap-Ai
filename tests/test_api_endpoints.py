@@ -54,3 +54,27 @@ def test_calendar_export_endpoint():
     assert resp.status_code == 200
     assert "BEGIN:VCALENDAR" in resp.text
     assert "END:VCALENDAR" in resp.text
+
+
+def test_start_run_form_parsing():
+    from unittest.mock import patch
+    with patch("backend.main._run_pipeline"):
+        # Test that comma-separated target_countries and target_fields parse without JSONDecodeError
+        resp = client.post(
+            "/api/run",
+        data={
+            "name": "Test Student",
+            "nationality": "Indian",
+            "degree": "B.Tech",
+            "field_of_study": "Computer Science",
+            "cgpa": 8.5,
+            "cgpa_scale": 10.0,
+            "target_countries": "Canada, Germany, Singapore",
+            "target_fields": "Computer Science, AI",
+            "extra_urls": "https://linkedin.com/in/test\nhttps://github.com/test",
+            "needs_full_funding": "true",
+            "chaos_mode": "false",
+        },
+    )
+    assert resp.status_code == 200
+    assert "run_id" in resp.json()
