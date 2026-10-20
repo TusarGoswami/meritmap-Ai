@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from backend.llm import llm_structured
 from backend.events import emit
@@ -217,7 +217,7 @@ def _apply_evidence(
     source: str,
 ) -> Opportunity:
     """Apply extracted evidence to an opportunity, creating Evidence Ledger entries."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     is_verified = source == "direct"  # Only direct fetches count as verified
 
     def make_field(value, snippet=None) -> EvidenceField:

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, AsyncGenerator
 
 from backend.schemas.models import AgentEvent, EventType
@@ -28,7 +28,7 @@ def emit(
 ) -> AgentEvent:
     """Emit an event for a run. Non-blocking, queues to all subscribers."""
     event = AgentEvent(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         agent=agent,
         type=event_type,
         message=message,
