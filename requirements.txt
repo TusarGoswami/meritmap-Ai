@@ -1,0 +1,42 @@
+# Core
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.0
+pydantic>=2.9.0
+httpx>=0.27.0
+sse-starlette>=2.1.0
+python-multipart>=0.0.9
+
+# LLM providers
+anthropic>=0.37.0
+google-genai>=1.0.0
+openai>=1.50.0
+
+# LangGraph
+langgraph>=0.2.0
+langchain-core>=0.3.0
+
+# Search
+tavily-python>=0.5.0
+duckduckgo-search>=6.3.0
+
+# PDF parsing
+pdfplumber>=0.11.0
+pypdf>=4.0.0
+
+# Web content extraction
+trafilatura>=1.12.0
+beautifulsoup4>=4.12.0
+
+# GitHub
+# (uses httpx, no extra package)
+
+# Calendar
+icalendar>=6.0.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.24.0
+
+# Utilities
+tenacity>=9.0.0
