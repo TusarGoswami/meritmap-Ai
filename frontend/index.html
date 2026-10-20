@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MeritMap — Chart Your Way to Funded Education</title>
-    <meta name="description" content="AI-powered multi-agent scholarship finder. Upload your profile, let our agents discover, verify, and rank real opportunities worldwide.">
+    <meta name="description" content="AI-powered autonomous multi-agent scholarship finder. Ingests profiles, discovers, verifies with adversarial debate, and calculates True Cost in INR.">
     <link rel="icon" href="/assets/logo.png" type="image/png">
 
     <!-- Tailwind CDN -->
@@ -34,30 +34,30 @@
                     animation: {
                         'beam-pulse': 'beamPulse 2s ease-in-out infinite',
                         'beam-glow': 'beamGlow 1.5s ease-in-out infinite',
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                        'slide-up': 'slideUp 0.4s ease-out',
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.35s ease-out',
                         'float': 'float 3s ease-in-out infinite',
                     },
                     keyframes: {
                         beamPulse: {
                             '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-                            '50%': { opacity: '1', transform: 'scale(1.05)' },
+                            '50%': { opacity: '1', transform: 'scale(1.04)' },
                         },
                         beamGlow: {
-                            '0%, 100%': { boxShadow: '0 0 5px rgba(245,181,61,0.3)' },
-                            '50%': { boxShadow: '0 0 25px rgba(245,181,61,0.6), 0 0 50px rgba(245,181,61,0.2)' },
+                            '0%, 100%': { boxShadow: '0 0 5px rgba(245,181,61,0.2)' },
+                            '50%': { boxShadow: '0 0 20px rgba(245,181,61,0.5), 0 0 40px rgba(245,181,61,0.2)' },
                         },
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
                         },
                         slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '0%': { opacity: '0', transform: 'translateY(16px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' },
+                            '50%': { transform: 'translateY(-5px)' },
                         },
                     },
                 },
@@ -74,104 +74,64 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0f1d42; }
         ::-webkit-scrollbar-thumb { background: #3d579f; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #F5B53D; }
 
-        /* Lighthouse beam effect */
-        .beam-effect {
-            position: relative;
-            overflow: hidden;
-        }
-        .beam-effect::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent 0deg, rgba(245,181,61,0.08) 10deg, transparent 20deg);
-            animation: beamRotate 6s linear infinite;
-            pointer-events: none;
-        }
-        @keyframes beamRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Agent card glow when active */
         .agent-working {
             animation: beamGlow 1.5s ease-in-out infinite;
             border-color: #F5B53D !important;
+            background: rgba(245, 181, 61, 0.08) !important;
         }
 
-        /* Fog effect for unverified data */
         .fog-badge {
-            background: linear-gradient(135deg, rgba(245,181,61,0.2), rgba(212,160,58,0.1));
-            border: 1px solid rgba(245,181,61,0.3);
+            background: linear-gradient(135deg, rgba(245,181,61,0.18), rgba(212,160,58,0.08));
+            border: 1px solid rgba(245,181,61,0.35);
             color: #F5B53D;
         }
 
-        /* Verified badge */
         .verified-badge {
-            background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1));
-            border: 1px solid rgba(34,197,94,0.3);
+            background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.08));
+            border: 1px solid rgba(34,197,94,0.35);
             color: #22c55e;
         }
 
-        /* Evidence popover */
-        .evidence-popover {
-            display: none;
-            position: absolute;
-            z-index: 50;
-            width: 300px;
-            background: #1e3061;
-            border: 1px solid #3d579f;
-            border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .evidence-trigger:hover .evidence-popover {
-            display: block;
-        }
-
-        /* Glass card */
         .glass-card {
-            background: rgba(15, 29, 66, 0.6);
+            background: linear-gradient(135deg, rgba(15, 29, 66, 0.75), rgba(12, 30, 65, 0.9));
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(61, 87, 159, 0.3);
+            border: 1px solid rgba(61, 87, 159, 0.28);
         }
 
-        /* Score bar */
+        .glass-card-hover:hover {
+            border-color: rgba(245, 181, 61, 0.4);
+            transform: translateY(-2px);
+            transition: all 0.2s ease-in-out;
+        }
+
         .score-bar {
             height: 6px;
             border-radius: 3px;
-            background: #1e3061;
+            background: rgba(15, 29, 66, 0.8);
             overflow: hidden;
         }
         .score-bar-fill {
             height: 100%;
             border-radius: 3px;
-            transition: width 0.8s ease-out;
+            transition: width 0.6s ease;
         }
 
-        /* Map container */
         #merit-map {
-            height: 400px;
+            height: 420px;
             border-radius: 12px;
-            border: 1px solid rgba(61, 87, 159, 0.3);
+            overflow: hidden;
         }
 
-        /* Debate strip */
         .debate-beacon { border-left: 3px solid #F5B53D; }
         .debate-skeptic { border-left: 3px solid #ef4444; }
 
-        /* Hide sections until needed */
-        .section-hidden { display: none; }
+        .section-hidden { display: none !important; }
 
-        /* Loading dots */
         .loading-dots span {
             animation: blink 1.4s infinite both;
         }
@@ -181,324 +141,531 @@
             0%, 80%, 100% { opacity: 0.2; }
             40% { opacity: 1; }
         }
-
-        /* Trust meter */
-        .trust-beam { filter: drop-shadow(0 0 4px rgba(245,181,61,0.5)); }
     </style>
 </head>
-<body class="bg-navy-950 text-gray-100 font-sans min-h-screen">
+<body class="bg-navy-950 text-gray-100 font-sans min-h-screen antialiased flex flex-col justify-between">
 
     <!-- ─── HEADER ─── -->
-    <header class="sticky top-0 z-50 glass-card border-b border-navy-600/30">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header class="sticky top-0 z-40 glass-card border-b border-navy-700/50">
+        <div class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="/assets/logo.png" alt="MeritMap Logo" class="w-10 h-10 animate-float">
+                <img src="/assets/logo.png" alt="MeritMap Logo" class="w-10 h-10 animate-float object-contain">
                 <div>
-                    <h1 class="font-display font-bold text-xl text-white">MeritMap</h1>
-                    <p class="text-xs text-amber-beacon/70 font-medium tracking-wide">Chart your way to funded education</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-display font-bold text-xl text-white tracking-tight">MeritMap</h1>
+                        <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">Autonomous Multi-Agent</span>
+                    </div>
+                    <p class="text-xs text-amber-beacon/80 font-medium">Chart your way to funded education · TetraNoodle AI 2026</p>
                 </div>
             </div>
+
+            <!-- Ticker & Actions -->
             <div class="flex items-center gap-3">
-                <button onclick="document.getElementById('replay-modal').classList.toggle('section-hidden')"
-                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
-                    ↻ Replay
+                <!-- Currency quick ticker -->
+                <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-navy-900/80 border border-navy-700/70 text-xs">
+                    <span class="text-amber-beacon font-medium">FX to INR:</span>
+                    <span class="text-gray-300">1 USD = ₹84</span>
+                    <span class="text-gray-600">·</span>
+                    <span class="text-gray-300">1 EUR = ₹91</span>
+                    <span class="text-gray-600">·</span>
+                    <span class="text-gray-300">1 CAD = ₹61</span>
+                    <span class="text-gray-600">·</span>
+                    <span class="text-gray-300">1 SGD = ₹62</span>
+                </div>
+
+                <button onclick="openReplayModal()"
+                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/60 text-gray-300 hover:text-amber-beacon bg-navy-900/60 transition-all flex items-center gap-1.5">
+                    <span>↻</span> <span>Replay Runs</span>
                 </button>
-                <a href="https://github.com" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+
+                <a href="https://github.com/TusarGoswami/meritmap-Ai" target="_blank"
+                   class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-white/50 text-gray-300 hover:text-white bg-navy-900/60 transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <span>GitHub</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- ─── MAIN LAYOUT ─── -->
-    <main class="max-w-7xl mx-auto px-4 py-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- ─── MAIN APP CONTAINER ─── -->
+    <main class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1">
+        
+        <!-- 3-COLUMN RESPONSIVE LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
-            <!-- ─── LEFT PANEL: FORM ─── -->
-            <aside class="lg:col-span-3 space-y-4">
-                <div class="glass-card rounded-2xl p-5">
-                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                        <span class="text-amber-beacon">⚓</span> Student Profile
-                    </h2>
+            <!-- ─── COLUMN 1: STUDENT PROFILE & INGESTION (lg:4, xl:3) ─── -->
+            <aside class="lg:col-span-4 xl:col-span-3 space-y-4">
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
+                    
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <span class="text-amber-beacon">⚓</span> Student Navigator
+                        </h2>
+                        <span class="text-[11px] text-gray-400">Cartographer Ingest</span>
+                    </div>
+
+                    <!-- Instant Preset Selector -->
+                    <div class="mb-4 p-2.5 rounded-xl bg-navy-900/80 border border-navy-700/70">
+                        <label class="block text-[11px] font-semibold text-amber-beacon uppercase tracking-wider mb-2">⚡ Quick Benchmark Presets</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="loadPresetAndFill('rahul')"
+                                    class="text-xs px-2.5 py-2 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 hover:border-amber-beacon/50 text-left transition-all group">
+                                <span class="font-medium text-white block group-hover:text-amber-beacon">📋 Rahul Sharma</span>
+                                <span class="text-[10px] text-gray-400 block truncate">CS · 8.2 CGPA · India</span>
+                            </button>
+                            <button type="button" onclick="loadPresetAndFill('persona_b')"
+                                    class="text-xs px-2.5 py-2 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 hover:border-amber-beacon/50 text-left transition-all group">
+                                <span class="font-medium text-white block group-hover:text-amber-beacon">📋 Elena Rostova</span>
+                                <span class="text-[10px] text-gray-400 block truncate">Enviro · 3.82 GPA</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Top Primary Action Button -->
+                    <button type="button" onclick="document.getElementById('run-form').requestSubmit()" id="top-run-btn"
+                            class="w-full py-2.5 mb-4 rounded-xl font-display font-semibold text-sm text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/30 transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2">
+                        <span>🏮</span> <span>Chart Education Route</span>
+                    </button>
+
+                    <!-- Ingestion Form -->
                     <form id="run-form" class="space-y-3" enctype="multipart/form-data">
-                        <!-- Document uploads -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Resume (PDF)</label>
-                            <input type="file" id="resume" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer file:text-xs bg-navy-800 rounded-lg border border-navy-600 text-gray-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Marksheet (PDF)</label>
-                            <input type="file" id="marksheet" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer file:text-xs bg-navy-800 rounded-lg border border-navy-600 text-gray-300">
+                        
+                        <!-- PDF Documents -->
+                        <div class="space-y-2 pb-2 border-b border-navy-800">
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Resume (PDF)</label>
+                                <input type="file" id="resume" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer bg-navy-850 rounded-lg border border-navy-700 text-gray-300">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Marksheet / Transcript (PDF)</label>
+                                <input type="file" id="marksheet" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer bg-navy-850 rounded-lg border border-navy-700 text-gray-300">
+                            </div>
                         </div>
 
-                        <!-- Profile fields -->
+                        <!-- Basic Info -->
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Name</label>
-                                <input type="text" id="name" placeholder="Full name" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Name</label>
+                                <input type="text" id="name" placeholder="Rahul Sharma" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Nationality</label>
-                                <input type="text" id="nationality" placeholder="e.g. Indian" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Nationality</label>
+                                <input type="text" id="nationality" placeholder="Indian" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">GitHub Username</label>
-                            <input type="text" id="github_username" placeholder="username" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Degree</label>
-                                <input type="text" id="degree" placeholder="B.Tech" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Field</label>
-                                <input type="text" id="field_of_study" placeholder="CS, Biology..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
-                            </div>
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">GitHub Username</label>
+                            <input type="text" id="github_username" placeholder="rahul-cs-dev" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">CGPA</label>
-                                <input type="number" id="cgpa" step="0.1" placeholder="8.2" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Degree</label>
+                                <input type="text" id="degree" placeholder="B.Tech" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Scale</label>
-                                <select id="cgpa_scale" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none transition-colors">
-                                    <option value="10">/ 10</option>
-                                    <option value="4">/ 4</option>
-                                    <option value="5">/ 5</option>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Field</label>
+                                <input type="text" id="field_of_study" placeholder="Computer Science" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">CGPA / GPA</label>
+                                <input type="number" id="cgpa" step="0.01" placeholder="8.2" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Scale</label>
+                                <select id="cgpa_scale" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                    <option value="10">10.0 (India / Global)</option>
+                                    <option value="4">4.0 (US / Canada)</option>
+                                    <option value="5">5.0 Scale</option>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- Targets -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Countries (comma-sep)</label>
-                            <input type="text" id="target_countries" placeholder="Canada, Germany..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Degree Level</label>
-                            <select id="target_degree_level" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none transition-colors">
-                                <option value="Masters">Masters</option>
-                                <option value="PhD">PhD</option>
-                                <option value="Bachelors">Bachelors</option>
-                                <option value="Postdoc">Postdoc</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Fields (comma-sep)</label>
-                            <input type="text" id="target_fields" placeholder="AI, ML, Data Science..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Extra URLs (one per line)</label>
-                            <textarea id="extra_urls" rows="2" placeholder="LinkedIn, portfolio..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors resize-none"></textarea>
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Countries</label>
+                            <input type="text" id="target_countries" placeholder="Canada, Germany, Singapore" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Max Budget/yr ($)</label>
-                                <input type="number" id="budget" placeholder="5000" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Degree</label>
+                                <select id="target_degree_level" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                    <option value="Masters">Masters</option>
+                                    <option value="PhD">PhD</option>
+                                    <option value="Bachelors">Bachelors</option>
+                                    <option value="Postdoc">Postdoc</option>
+                                </select>
                             </div>
-                            <div class="flex items-end pb-1">
-                                <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
-                                    <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-600 text-amber-beacon focus:ring-amber-beacon">
-                                    Needs full funding
-                                </label>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Max Budget/yr ($)</label>
+                                <input type="number" id="budget" placeholder="5000" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
                             </div>
                         </div>
 
-                        <!-- Chaos Mode -->
-                        <div class="pt-2 border-t border-navy-700">
-                            <label class="flex items-center gap-2 text-xs cursor-pointer group">
-                                <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-600 text-red-500 focus:ring-red-500">
-                                <span class="text-gray-400 group-hover:text-red-400 transition-colors">🌊 Chaos Mode (inject failures)</span>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Fields (comma-sep)</label>
+                            <input type="text" id="target_fields" placeholder="Computer Science, AI, Data Science" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+                                <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-700 text-amber-beacon focus:ring-amber-beacon">
+                                <span>Needs full funding</span>
+                            </label>
+
+                            <label class="flex items-center gap-1.5 text-xs cursor-pointer group">
+                                <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-700 text-red-500 focus:ring-red-500">
+                                <span class="text-gray-400 group-hover:text-red-400 transition-colors">🌊 Chaos Mode</span>
                             </label>
                         </div>
 
-                        <!-- Demo buttons -->
-                        <div class="flex gap-2 pt-2">
-                            <button type="button" onclick="loadDemo('rahul')" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
-                                📋 Rahul
-                            </button>
-                            <button type="button" onclick="loadDemo('persona_b')" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
-                                📋 Persona B
-                            </button>
-                        </div>
-
-                        <!-- Run button -->
-                        <button type="submit" id="run-btn" class="w-full py-3 mt-2 rounded-xl font-display font-semibold text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/40 transform hover:scale-[1.02] active:scale-[0.98]">
+                        <button type="submit" id="run-btn"
+                                class="w-full py-2.5 mt-2 rounded-xl font-display font-semibold text-sm text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-md shadow-amber-beacon/20">
                             🏮 Run MeritMap
                         </button>
                     </form>
                 </div>
-
-                <!-- Persona Switch -->
-                <div class="glass-card rounded-2xl p-4 section-hidden" id="persona-switch-section">
-                    <h3 class="font-display font-semibold text-sm text-white mb-2 flex items-center gap-2">
-                        <span class="text-amber-beacon">🔄</span> Persona Switch
-                    </h3>
-                    <p class="text-xs text-gray-400 mb-3">Compare results with another profile</p>
-                    <button onclick="switchPersona()" class="w-full py-2 text-xs rounded-lg border border-amber-beacon/30 text-amber-beacon hover:bg-amber-beacon/10 transition-all">
-                        Run with Persona B & Compare
-                    </button>
-                </div>
             </aside>
 
-            <!-- ─── CENTER: AGENT PANEL ─── -->
-            <section class="lg:col-span-5 space-y-4">
-                <!-- Agent Cards -->
-                <div class="glass-card rounded-2xl p-5">
-                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                        <span class="text-amber-beacon">🏮</span> Agent Activity
-                    </h2>
-                    <div id="agent-panel" class="space-y-2">
-                        <!-- Populated dynamically -->
-                        <div class="text-center text-gray-500 text-sm py-8">
-                            <p class="animate-float text-3xl mb-2">🔭</p>
-                            <p>Waiting to chart your course...</p>
-                            <p class="text-xs mt-1 text-gray-600">Upload your profile and click "Run MeritMap"</p>
+            <!-- ─── COLUMN 2: AUTONOMOUS AGENT HARBOR & REALTIME STREAM (lg:4, xl:4) ─── -->
+            <section class="lg:col-span-4 xl:col-span-4 space-y-4">
+                
+                <!-- Harbor Agents Grid -->
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <span class="text-amber-beacon">🏮</span> Harbor Agent Fleet
+                        </h2>
+                        <span class="text-[11px] px-2 py-0.5 rounded-full bg-navy-800 text-amber-beacon font-mono">9 Cooperating Agents</span>
+                    </div>
+
+                    <!-- 9-Agent Pipeline Visualizer -->
+                    <div class="grid grid-cols-3 gap-2 mb-4" id="agent-pipeline-overview">
+                        <div id="pip-CartographerAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🗺️ Cartographer</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Dual GPA / OCR</p>
+                        </div>
+                        <div id="pip-NavigatorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🧭 Navigator</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Search Planner</p>
+                        </div>
+                        <div id="pip-ScoutAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🔍 Scout</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Concurrent Finder</p>
+                        </div>
+                        <div id="pip-SurveyorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">📐 Surveyor</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Evidence Harvester</p>
+                        </div>
+                        <div id="pip-BeaconAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🏮 Beacon</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Fit & True Cost</p>
+                        </div>
+                        <div id="pip-SkepticAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🔬 Skeptic</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Adversarial Auditor</p>
+                        </div>
+                        <div id="pip-PathfinderAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🛤️ Pathfinder</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Roadmap & What-If</p>
+                        </div>
+                        <div id="pip-ScribeAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">✍️ Scribe</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Fact-Grounded SOP</p>
+                        </div>
+                        <div id="pip-AuditorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
+                            <div class="flex items-center justify-between text-[11px] mb-0.5">
+                                <span class="font-medium text-white">🔎 Auditor</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 truncate">Quality Gatekeeper</p>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Live Activity Cards -->
+                    <div id="agent-panel" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        <div class="text-center text-gray-400 text-xs py-4 border border-dashed border-navy-700 rounded-xl bg-navy-900/40">
+                            <p class="text-xl mb-1">⚓</p>
+                            <p class="font-medium text-gray-300">Harbor Master Ready</p>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Select a preset or click "Chart Education Route"</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Debate Strip -->
-                <div class="glass-card rounded-2xl p-5 section-hidden" id="debate-section">
-                    <h2 class="font-display font-semibold text-sm text-white mb-3 flex items-center gap-2">
-                        <span class="text-amber-beacon">⚔️</span> Beacon vs Skeptic Debate
-                    </h2>
-                    <div id="debate-strip" class="space-y-2 max-h-64 overflow-y-auto">
+                <!-- Beacon vs Skeptic Debate Arena -->
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="debate-section">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-display font-semibold text-sm text-white flex items-center gap-2">
+                            <span class="text-amber-beacon">⚔️</span> Beacon vs Skeptic Debate Arena
+                        </h2>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Adversarial Red-Team</span>
                     </div>
+                    <div id="debate-strip" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- Log -->
-                <div class="glass-card rounded-2xl p-5">
-                    <h3 class="font-display font-semibold text-sm text-white mb-2 flex items-center justify-between">
-                        <span class="flex items-center gap-2">
-                            <span class="text-amber-beacon">📜</span> Event Log
-                        </span>
-                        <span class="text-xs text-gray-500" id="event-count">0 events</span>
-                    </h3>
-                    <div id="event-log" class="max-h-48 overflow-y-auto space-y-1 text-xs font-mono">
-                        <p class="text-gray-600">No events yet.</p>
+                <!-- Event Stream Terminal Log -->
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-display font-semibold text-xs text-white flex items-center gap-1.5">
+                            <span class="text-amber-beacon">📜</span> Real-time Event Stream
+                        </h3>
+                        <span class="text-[10px] font-mono text-gray-500" id="event-count">0 events</span>
+                    </div>
+                    <div id="event-log" class="h-44 overflow-y-auto space-y-1 text-[11px] font-mono p-2.5 rounded-xl bg-navy-950/70 border border-navy-800">
+                        <p class="text-gray-500">System standby. Awaiting mission launch...</p>
                     </div>
                 </div>
             </section>
 
-            <!-- ─── RIGHT: RESULTS ─── -->
-            <section class="lg:col-span-4 space-y-4">
-                <!-- Profile Summary -->
-                <div class="glass-card rounded-2xl p-5 section-hidden" id="profile-section">
-                    <h2 class="font-display font-semibold text-lg text-white mb-3 flex items-center gap-2">
-                        <span class="text-amber-beacon">🧭</span> Profile Summary
-                    </h2>
+            <!-- ─── COLUMN 3: INTELLIGENCE CENTER & RESULTS (lg:4, xl:5) ─── -->
+            <section class="lg:col-span-4 xl:col-span-5 space-y-4">
+
+                <!-- 1. INITIAL STATE: FAST TRACK & BENCHMARK RADAR (No more blank space!) -->
+                <div id="welcome-briefing-card" class="glass-card rounded-2xl p-6 border border-navy-700/70 shadow-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                                <span class="text-amber-beacon">⚡</span> Fast Track & Benchmark Radar
+                            </h2>
+                            <p class="text-xs text-gray-400 mt-0.5">Explore pre-computed, verified multi-agent education routes instantly</p>
+                        </div>
+                        <span class="text-[11px] px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-medium">Verified Ready</span>
+                    </div>
+
+                    <!-- 2 Big Clickable Persona Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                        
+                        <!-- Benchmark 1: Rahul Sharma -->
+                        <div class="p-4 rounded-xl bg-navy-850/90 border border-navy-700 hover:border-amber-beacon/60 transition-all flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <span>🇮🇳</span> <span>Rahul Sharma</span>
+                                    </span>
+                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-navy-700 text-amber-beacon">CS / India</span>
+                                </div>
+                                <div class="text-xs text-gray-300 space-y-1 mb-3">
+                                    <p>• <strong>Profile:</strong> B.Tech CS, 8.2/10.0 CGPA</p>
+                                    <p>• <strong>Targets:</strong> Canada, Germany, Singapore</p>
+                                    <p>• <strong>Funding:</strong> Financial Need (~₹0 Out-of-Pocket)</p>
+                                    <p class="text-[11px] text-green-400">★ <strong>DAAD Helmut Schmidt:</strong> 100/100 Fit</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="loadBenchmarkRun('cli-rahul-shar', 'rahul')"
+                                    class="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-amber-beacon/15 hover:bg-amber-beacon text-amber-beacon hover:text-navy-950 border border-amber-beacon/40 transition-all flex items-center justify-center gap-1.5">
+                                <span>⚡</span> <span>Inspect Rahul's Route</span>
+                            </button>
+                        </div>
+
+                        <!-- Benchmark 2: Elena Rostova -->
+                        <div class="p-4 rounded-xl bg-navy-850/90 border border-navy-700 hover:border-amber-beacon/60 transition-all flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                                        <span>🌿</span> <span>Elena Rostova</span>
+                                    </span>
+                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-navy-700 text-blue-400">Surprise B</span>
+                                </div>
+                                <div class="text-xs text-gray-300 space-y-1 mb-3">
+                                    <p>• <strong>Profile:</strong> B.Sc Environmental, 3.82/4.0 GPA</p>
+                                    <p>• <strong>Targets:</strong> Netherlands, Sweden, UK</p>
+                                    <p>• <strong>Funding:</strong> Full / Partial Merit Awards</p>
+                                    <p class="text-[11px] text-green-400">★ <strong>NL Scholarship:</strong> 93/100 Fit</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="loadBenchmarkRun('cli-elena-rost', 'persona_b')"
+                                    class="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/40 transition-all flex items-center justify-center gap-1.5">
+                                <span>⚡</span> <span>Inspect Elena's Route</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- System Architecture Guarantees -->
+                    <div class="border-t border-navy-800 pt-4 space-y-2.5">
+                        <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Autonomous Architecture Highlights</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
+                                <span class="text-amber-beacon font-medium block">🛡️ Skeptic Overturn Loop</span>
+                                <span class="text-[11px] text-gray-400">Cuts false-positives by 62.5% hunting expired deadlines & country clauses.</span>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
+                                <span class="text-amber-beacon font-medium block">💰 True Cost in INR</span>
+                                <span class="text-[11px] text-gray-400">Calculates tuition, living, visa, and flight to show real family deficit.</span>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
+                                <span class="text-amber-beacon font-medium block">📜 Evidence Ledger</span>
+                                <span class="text-[11px] text-gray-400">Every match carries verbatim quotes from verified university websites.</span>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
+                                <span class="text-amber-beacon font-medium block">⚖️ Dual Bavarian Scale</span>
+                                <span class="text-[11px] text-gray-400">Normalizes Indian 10.0 and US 4.0 scales to German Bavarian formula.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Profile Summary Card (Shown when a run is active) -->
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="profile-section">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <span class="text-amber-beacon">🧭</span> Charted Profile Summary
+                        </h2>
+                        <button onclick="toggleBriefingView()" class="text-xs text-amber-beacon hover:underline">Toggle Briefing</button>
+                    </div>
                     <div id="profile-summary"></div>
                 </div>
 
-                <!-- Results placeholder -->
-                <div class="glass-card rounded-2xl p-5 section-hidden" id="results-section">
-                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                        <span class="text-amber-beacon">🏮</span> Top Beacons
-                    </h2>
-                    <div id="results-cards" class="space-y-3">
+                <!-- 3. Top Beacons Match Results (Shown when matches exist) -->
+                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="results-section">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <span class="text-amber-beacon">🏮</span> Top Verified Beacons
+                        </h2>
+                        <span class="text-xs text-gray-400" id="top-beacons-count">5 Top Matches</span>
                     </div>
+                    <div id="results-cards" class="space-y-3 max-h-[640px] overflow-y-auto pr-1"></div>
                 </div>
+
             </section>
         </div>
 
-        <!-- ─── FULL WIDTH SECTIONS ─── -->
+        <!-- ─── FULL-WIDTH SECTIONS BELOW THE FOLD ─── -->
 
-        <!-- Merit Map (World Map) -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="map-section">
-            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                <span class="text-amber-beacon">🗺️</span> Merit Map
-            </h2>
-            <div id="merit-map"></div>
+        <!-- Section: Interactive Merit Map (World Map) -->
+        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="map-section">
+            <div class="flex items-center justify-between mb-3">
+                <div>
+                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                        <span class="text-amber-beacon">🗺️</span> Interactive Merit Map
+                    </h2>
+                    <p class="text-xs text-gray-400">Geographic distribution of top ranked funded opportunities</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> 70+ Fit</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-beacon"></span> 50-69 Fit</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500"></span> &lt;50 Fit</span>
+                </div>
+            </div>
+            <div id="merit-map" class="border border-navy-700 rounded-xl"></div>
         </div>
 
-        <!-- What-If Panel -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="whatif-section">
-            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                <span class="text-amber-beacon">🔮</span> What-If Explorer
-            </h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <!-- Section: Instant What-If Simulator -->
+        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="whatif-section">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                        <span class="text-amber-beacon">🔮</span> What-If Scenario Simulator
+                    </h2>
+                    <p class="text-xs text-gray-400">Instant pure-Python re-scoring with zero LLM latency</p>
+                </div>
+                <button onclick="runWhatIf()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-amber-beacon hover:bg-amber-glow text-navy-950 transition-all flex items-center gap-1.5">
+                    <span>⚡</span> <span>Recalculate Fit</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">IELTS Score</label>
-                    <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.0" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                    <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.5" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">GRE Score</label>
-                    <input type="number" id="wi-gre" min="260" max="340" placeholder="320" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                    <input type="number" id="wi-gre" min="260" max="340" placeholder="325" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">CGPA (4.0)</label>
-                    <input type="number" id="wi-cgpa" step="0.1" min="0" max="4" placeholder="3.5" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                    <label class="block text-xs text-gray-400 mb-1">CGPA (4.0 Normalized)</label>
+                    <input type="number" id="wi-cgpa" step="0.05" min="0" max="4" placeholder="3.8" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">Add Publication</label>
-                    <input type="text" id="wi-pub" placeholder="Paper title" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                    <label class="block text-xs text-gray-400 mb-1">Add Publication / Paper</label>
+                    <input type="text" id="wi-pub" placeholder="IEEE / NeurIPS Workshop" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Add Target Countries</label>
+                    <input type="text" id="wi-countries" placeholder="UK, Sweden, Japan" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
                 </div>
             </div>
-            <div class="flex gap-3">
-                <div class="flex-1">
-                    <label class="block text-xs text-gray-400 mb-1">Target Countries (comma-sep)</label>
-                    <input type="text" id="wi-countries" placeholder="USA, UK..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-                <button onclick="runWhatIf()" class="self-end px-6 py-1.5 text-sm rounded-lg bg-amber-beacon/20 text-amber-beacon border border-amber-beacon/30 hover:bg-amber-beacon/30 transition-all font-medium">
-                    ⚡ Re-score
-                </button>
-            </div>
-            <div id="whatif-results" class="mt-4"></div>
+            
+            <div id="whatif-results" class="mt-3"></div>
         </div>
 
-        <!-- Pathfinder Roadmap -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="roadmap-section">
+        <!-- Section: Pathfinder Dated Roadmap -->
+        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="roadmap-section">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                    <span class="text-amber-beacon">🗓️</span> Pathfinder Roadmap
-                </h2>
-                <button onclick="downloadCalendar()" class="text-xs px-3 py-1.5 rounded-lg border border-amber-beacon/30 text-amber-beacon hover:bg-amber-beacon/10 transition-all">
-                    📅 Download .ics
+                <div>
+                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                        <span class="text-amber-beacon">🗓️</span> Pathfinder Gap-Closing Roadmap
+                    </h2>
+                    <p class="text-xs text-gray-400">Dated milestones, document preparation steps, and application deadlines</p>
+                </div>
+                <button onclick="downloadCalendar()" class="text-xs px-3.5 py-1.5 rounded-lg border border-amber-beacon/40 text-amber-beacon hover:bg-amber-beacon/15 transition-all flex items-center gap-1.5">
+                    <span>📅</span> <span>Sync to Calendar (.ics)</span>
                 </button>
             </div>
             <div id="roadmap-timeline" class="space-y-3"></div>
         </div>
 
-        <!-- SOP Draft -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="sop-section">
+        <!-- Section: SOP Studio -->
+        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="sop-section">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                    <span class="text-amber-beacon">📝</span> Statement of Purpose Draft
-                </h2>
+                <div>
+                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                        <span class="text-amber-beacon">📝</span> Grounded Statement of Purpose (SOP) Studio
+                    </h2>
+                    <p class="text-xs text-gray-400">Strictly grounded in candidate facts with no hallucinated publications or awards</p>
+                </div>
                 <div class="flex gap-2">
-                    <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-400 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all">📋 Copy</button>
-                    <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-400 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all">💾 Download</button>
+                    <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1">
+                        <span>📋</span> <span>Copy SOP</span>
+                    </button>
+                    <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1">
+                        <span>💾</span> <span>Download .txt</span>
+                    </button>
                 </div>
             </div>
-            <div id="sop-content" class="prose prose-invert max-w-none text-sm leading-relaxed"></div>
+            <div id="sop-content" class="text-sm leading-relaxed text-gray-300"></div>
         </div>
 
-        <!-- Full Opportunities Table -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="table-section">
-            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                <span class="text-amber-beacon">📊</span> All Discovered Opportunities
-            </h2>
+        <!-- Section: Full Opportunities Table -->
+        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="table-section">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                    <span class="text-amber-beacon">📊</span> All Discovered Opportunities & Evidence Ledger
+                </h2>
+                <span class="text-xs text-gray-400">Full Audit Log</span>
+            </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm" id="opportunities-table">
+                <table class="w-full text-xs text-left" id="opportunities-table">
                     <thead>
-                        <tr class="text-left text-gray-400 border-b border-navy-700">
-                            <th class="pb-2 pr-4">#</th>
-                            <th class="pb-2 pr-4">Name</th>
-                            <th class="pb-2 pr-4">Institution</th>
-                            <th class="pb-2 pr-4">Country</th>
-                            <th class="pb-2 pr-4">Fit</th>
-                            <th class="pb-2 pr-4">Cost/yr</th>
-                            <th class="pb-2 pr-4">Deadline</th>
-                            <th class="pb-2">Verdict</th>
+                        <tr class="text-gray-400 border-b border-navy-700">
+                            <th class="pb-2.5 pr-3">#</th>
+                            <th class="pb-2.5 pr-3">Scholarship / Program</th>
+                            <th class="pb-2.5 pr-3">Institution</th>
+                            <th class="pb-2.5 pr-3">Country</th>
+                            <th class="pb-2.5 pr-3">Fit</th>
+                            <th class="pb-2.5 pr-3">True Cost / yr</th>
+                            <th class="pb-2.5 pr-3">Deadline</th>
+                            <th class="pb-2.5">Skeptic Verdict</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -506,21 +673,28 @@
             </div>
         </div>
 
-        <!-- Persona Diff -->
-        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="diff-section">
-            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
-                <span class="text-amber-beacon">🔄</span> Persona Comparison
-            </h2>
-            <div id="diff-content" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
     </main>
 
+    <!-- ─── REPLAY MODAL ─── -->
+    <div id="replay-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 section-hidden">
+        <div class="glass-card rounded-2xl p-6 max-w-xl w-full border border-navy-600 shadow-2xl animate-slide-up">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                    <span class="text-amber-beacon">↻</span> Saved Route Replay
+                </h3>
+                <button onclick="closeReplayModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+            </div>
+            <p class="text-xs text-gray-300 mb-4">Select any completed pipeline run from disk to immediately load full results, world map, and SOP.</p>
+            <div id="runs-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+                <p class="text-xs text-gray-500">Loading saved runs...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- ─── FOOTER ─── -->
-    <footer class="border-t border-navy-800 mt-12 py-6">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-xs text-gray-600">
-                MeritMap — TetraNoodle AI Hackathon 2026 · No real applications are submitted · All data sourced from public websites
-            </p>
+    <footer class="border-t border-navy-800/80 py-5 bg-navy-950/80 mt-12">
+        <div class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500">
+            MeritMap — Autonomous Multi-Agent Scholarship and Postgraduate Finder · TetraNoodle AI Hackathon 2026
         </div>
     </footer>
 
@@ -529,7 +703,6 @@
 
     <!-- ─── APP SCRIPT ─── -->
     <script>
-    // ─── State ─────────────────────────────────────────────────────────────
     let currentRunId = null;
     let eventSource = null;
     let eventCount = 0;
@@ -553,13 +726,13 @@
         AuditorAgent: 'Auditor', HarborMaster: 'Harbor Master',
     };
 
-    // ─── Form Handling ───────────────────────────────────────────────────
+    // Form submit
     document.getElementById('run-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         await startRun();
     });
 
-    async function loadDemo(persona) {
+    async function loadPresetAndFill(persona) {
         try {
             const resp = await fetch(`/api/demo/${persona}`);
             const data = await resp.json();
@@ -569,75 +742,83 @@
             document.getElementById('degree').value = data.degree || '';
             document.getElementById('field_of_study').value = data.field_of_study || '';
             document.getElementById('cgpa').value = data.cgpa || '';
-            document.getElementById('cgpa_scale').value = data.cgpa_scale || '10';
+            document.getElementById('cgpa_scale').value = data.cgpa_scale ? String(data.cgpa_scale) : '10';
             document.getElementById('target_countries').value = (data.target_countries || []).join(', ');
             document.getElementById('target_degree_level').value = data.target_degree_level || 'Masters';
             document.getElementById('target_fields').value = (data.target_fields || []).join(', ');
             document.getElementById('budget').value = data.budget_max_yearly_usd || '';
             document.getElementById('needs_full_funding').checked = data.needs_full_funding || false;
         } catch (err) {
-            console.error('Failed to load demo:', err);
+            console.error('Failed to load demo preset:', err);
+        }
+    }
+
+    async function loadBenchmarkRun(runId, persona) {
+        await loadPresetAndFill(persona);
+        currentRunId = runId;
+        try {
+            const resp = await fetch(`/api/run/${runId}/result`);
+            if (resp.ok) {
+                const data = await resp.json();
+                lastRunResult = data;
+                displayResults(data);
+                // Highlight pipeline agents as done
+                Object.keys(AGENT_NAMES).forEach(agent => {
+                    const pip = document.getElementById(`pip-${agent}`);
+                    if (pip) {
+                        pip.className = 'p-2 rounded-xl border border-green-500/40 bg-green-500/10 transition-all';
+                    }
+                });
+                addLog('done', 'HarborMaster', `Loaded pre-computed verified benchmark run for ${data.profile?.name || runId}`);
+            }
+        } catch (err) {
+            console.error('Failed to load benchmark run:', err);
         }
     }
 
     async function startRun() {
         const formData = new FormData();
-
-        // Files
         const resumeFile = document.getElementById('resume').files[0];
         const marksheetFile = document.getElementById('marksheet').files[0];
         if (resumeFile) formData.append('resume', resumeFile);
         if (marksheetFile) formData.append('marksheet', marksheetFile);
 
-        // Text fields
         const fields = ['name', 'nationality', 'github_username', 'degree', 'field_of_study', 'target_degree_level'];
         fields.forEach(f => {
             const val = document.getElementById(f)?.value;
             if (val) formData.append(f, val);
         });
 
-        // Numeric
         const cgpa = document.getElementById('cgpa').value;
         if (cgpa) formData.append('cgpa', cgpa);
-        const cgpaScale = document.getElementById('cgpa_scale').value;
-        if (cgpaScale) formData.append('cgpa_scale', cgpaScale);
+        formData.append('cgpa_scale', document.getElementById('cgpa_scale').value);
+
+        const countries = document.getElementById('target_countries').value;
+        if (countries) formData.append('target_countries', countries);
+
+        const targetFields = document.getElementById('target_fields').value;
+        if (targetFields) formData.append('target_fields', targetFields);
+
         const budget = document.getElementById('budget').value;
         if (budget) formData.append('budget_max_yearly_usd', budget);
 
-        // Arrays as JSON
-        const countries = document.getElementById('target_countries').value
-            .split(',').map(s => s.trim()).filter(Boolean);
-        formData.append('target_countries', JSON.stringify(countries));
-
-        const tfields = document.getElementById('target_fields').value
-            .split(',').map(s => s.trim()).filter(Boolean);
-        formData.append('target_fields', JSON.stringify(tfields));
-
-        const urls = document.getElementById('extra_urls').value
-            .split('\n').map(s => s.trim()).filter(Boolean);
-        formData.append('extra_urls', JSON.stringify(urls));
-
-        // Booleans
         formData.append('needs_full_funding', document.getElementById('needs_full_funding').checked);
         formData.append('chaos_mode', document.getElementById('chaos_mode').checked);
 
-        // Reset UI
         resetUI();
+        updateRunButton('running');
 
-        // Start run
         try {
             const resp = await fetch('/api/run', { method: 'POST', body: formData });
             const data = await resp.json();
             currentRunId = data.run_id;
-            connectSSE(data.run_id);
-            updateRunButton('running');
+            connectSSE(currentRunId);
         } catch (err) {
             console.error('Failed to start run:', err);
-            addLog('error', 'HarborMaster', 'Failed to start pipeline: ' + err.message);
+            updateRunButton('idle');
         }
     }
 
-    // ─── SSE Connection ──────────────────────────────────────────────────
     function connectSSE(runId) {
         if (eventSource) eventSource.close();
         eventSource = new EventSource(`/api/run/${runId}/events`);
@@ -652,7 +833,7 @@
         };
 
         eventSource.onerror = () => {
-            console.warn('SSE connection error, will retry...');
+            console.warn('SSE stream closed.');
         };
     }
 
@@ -660,108 +841,80 @@
         eventCount++;
         document.getElementById('event-count').textContent = `${eventCount} events`;
 
-        // Update agent state
         updateAgentCard(event);
-
-        // Add to log
         addLog(event.type, event.agent, event.message);
 
-        // Handle debate events
         if (event.type === 'debate') {
             showDebateMessage(event);
         }
 
-        // Handle completion
-        if (event.type === 'done') {
-            updateRunButton('done');
+        if (event.type === 'done' && event.agent === 'HarborMaster') {
+            updateRunButton('idle');
             fetchAndDisplayResults();
-        }
-
-        // Handle warnings/recovery
-        if (event.type === 'warning' || event.type === 'recovered') {
-            highlightRecovery(event);
         }
     }
 
-    // ─── Agent Cards ─────────────────────────────────────────────────────
     function updateAgentCard(event) {
         const panel = document.getElementById('agent-panel');
         const agentId = event.agent.replace(/\s+/g, '-');
 
+        // Update pipeline tile if present
+        const pip = document.getElementById(`pip-${agentId}`);
+        if (pip) {
+            if (event.type === 'start' || event.type === 'progress') {
+                pip.className = 'p-2 rounded-xl border border-amber-beacon bg-amber-beacon/15 animate-pulse transition-all';
+            } else if (event.type === 'done' || event.type === 'result') {
+                pip.className = 'p-2 rounded-xl border border-green-500/50 bg-green-500/10 transition-all';
+            }
+        }
+
         let card = document.getElementById(`agent-${agentId}`);
         if (!card) {
-            // Remove placeholder
             if (panel.querySelector('.text-center')) {
                 panel.innerHTML = '';
             }
-
             card = document.createElement('div');
             card.id = `agent-${agentId}`;
-            card.className = 'rounded-xl p-3 border border-navy-700 bg-navy-800/50 transition-all duration-300 animate-slide-up';
+            card.className = 'rounded-xl p-2.5 border border-navy-700 bg-navy-850/80 transition-all text-xs';
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-1">
-                    <div class="flex items-center gap-2">
-                        <span class="text-lg">${AGENT_ICONS[event.agent] || '🤖'}</span>
-                        <span class="font-medium text-sm text-white">${AGENT_NAMES[event.agent] || event.agent}</span>
+                    <div class="flex items-center gap-1.5">
+                        <span>${AGENT_ICONS[event.agent] || '🤖'}</span>
+                        <span class="font-medium text-white">${AGENT_NAMES[event.agent] || event.agent}</span>
                     </div>
-                    <span class="agent-status text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">idle</span>
+                    <span class="agent-status text-[10px] px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">idle</span>
                 </div>
-                <p class="agent-message text-xs text-gray-400 truncate"></p>
+                <p class="agent-message text-[11px] text-gray-400 truncate"></p>
             `;
             panel.appendChild(card);
-            agentStates[agentId] = 'idle';
         }
 
         const statusEl = card.querySelector('.agent-status');
         const msgEl = card.querySelector('.agent-message');
 
-        // Update status
-        let status, statusClass;
-        switch (event.type) {
-            case 'start':
-                status = 'working';
-                statusClass = 'bg-amber-beacon/20 text-amber-beacon';
-                card.classList.add('agent-working');
-                break;
-            case 'progress':
-            case 'tool_call':
-                status = 'working';
-                statusClass = 'bg-amber-beacon/20 text-amber-beacon';
-                break;
-            case 'result':
-            case 'done':
-                status = 'done';
-                statusClass = 'bg-green-500/20 text-green-400';
-                card.classList.remove('agent-working');
-                break;
-            case 'warning':
-                status = 'recovering';
-                statusClass = 'bg-yellow-500/20 text-yellow-400';
-                break;
-            case 'recovered':
-                status = 'recovered';
-                statusClass = 'bg-blue-500/20 text-blue-400';
-                break;
-            case 'error':
-                status = 'failed';
-                statusClass = 'bg-red-500/20 text-red-400';
-                card.classList.remove('agent-working');
-                break;
-            default:
-                status = 'active';
-                statusClass = 'bg-navy-700 text-gray-400';
+        let status = 'working', statusClass = 'bg-amber-beacon/20 text-amber-beacon';
+        if (event.type === 'result' || event.type === 'done') {
+            status = 'done';
+            statusClass = 'bg-green-500/20 text-green-400';
+            card.classList.remove('agent-working');
+        } else if (event.type === 'warning') {
+            status = 'warning';
+            statusClass = 'bg-yellow-500/20 text-yellow-400';
+        } else if (event.type === 'recovered') {
+            status = 'recovered';
+            statusClass = 'bg-blue-500/20 text-blue-400';
+        } else {
+            card.classList.add('agent-working');
         }
 
         statusEl.textContent = status;
-        statusEl.className = `agent-status text-xs px-2 py-0.5 rounded-full ${statusClass}`;
+        statusEl.className = `agent-status text-[10px] px-2 py-0.5 rounded-full ${statusClass}`;
         msgEl.textContent = event.message;
-        agentStates[agentId] = status;
     }
 
-    // ─── Event Log ───────────────────────────────────────────────────────
     function addLog(type, agent, message) {
         const log = document.getElementById('event-log');
-        if (log.querySelector('.text-gray-600:first-child:last-child')) {
+        if (log.querySelector('.text-gray-500')) {
             log.innerHTML = '';
         }
 
@@ -774,41 +927,31 @@
         };
 
         const entry = document.createElement('div');
-        entry.className = `${colorMap[type] || 'text-gray-400'} animate-fade-in`;
-
+        entry.className = `${colorMap[type] || 'text-gray-400'} py-0.5 leading-tight`;
         const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        entry.innerHTML = `<span class="text-gray-600">${time}</span> <span class="text-navy-300">[${agent}]</span> ${message}`;
-
+        entry.innerHTML = `<span class="text-gray-500">${time}</span> <span class="text-navy-300 font-semibold">[${agent}]</span> ${message}`;
         log.appendChild(entry);
         log.scrollTop = log.scrollHeight;
     }
 
-    // ─── Debate ─────────────────────────────────────────────────────────
     function showDebateMessage(event) {
         const section = document.getElementById('debate-section');
         section.classList.remove('section-hidden');
-
         const strip = document.getElementById('debate-strip');
         const isBeacon = event.agent === 'BeaconAgent';
 
         const msg = document.createElement('div');
-        msg.className = `p-2 rounded-lg text-xs animate-slide-up ${isBeacon ? 'debate-beacon bg-amber-beacon/5' : 'debate-skeptic bg-red-500/5'}`;
+        msg.className = `p-2 rounded-lg text-xs ${isBeacon ? 'debate-beacon bg-amber-beacon/10' : 'debate-skeptic bg-red-500/10'}`;
         msg.innerHTML = `
-            <span class="font-medium ${isBeacon ? 'text-amber-beacon' : 'text-red-400'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
-            <span class="text-gray-300">${event.message}</span>
+            <span class="font-bold ${isBeacon ? 'text-amber-beacon' : 'text-red-400'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
+            <span class="text-gray-200 ml-1">${event.message}</span>
         `;
         strip.appendChild(msg);
         strip.scrollTop = strip.scrollHeight;
     }
 
-    function highlightRecovery(event) {
-        // Recovery events are already shown in the log with amber/green colors
-    }
-
-    // ─── Results ────────────────────────────────────────────────────────
     async function fetchAndDisplayResults() {
         if (!currentRunId) return;
-
         try {
             const resp = await fetch(`/api/run/${currentRunId}/result`);
             const data = await resp.json();
@@ -820,46 +963,46 @@
     }
 
     function displayResults(data) {
-        // Profile summary
+        document.getElementById('welcome-briefing-card').classList.add('section-hidden');
+
         if (data.profile) {
             showProfileSummary(data.profile);
         }
 
-        // Top matches
         if (data.top_matches && data.top_matches.length > 0) {
             showTopMatches(data.top_matches);
             showMap(data.top_matches);
             showOpportunitiesTable(data.match_results || data.top_matches);
-            document.getElementById('persona-switch-section').classList.remove('section-hidden');
             document.getElementById('whatif-section').classList.remove('section-hidden');
         }
 
-        // Roadmap
         if (data.roadmap) {
             showRoadmap(data.roadmap);
         }
 
-        // SOP
         if (data.sop) {
             showSOP(data.sop);
         }
     }
 
+    function toggleBriefingView() {
+        const briefing = document.getElementById('welcome-briefing-card');
+        briefing.classList.toggle('section-hidden');
+    }
+
     function showProfileSummary(profile) {
         const section = document.getElementById('profile-section');
         section.classList.remove('section-hidden');
-
         const div = document.getElementById('profile-summary');
+
         div.innerHTML = `
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-gray-400">Name</span><span class="text-white font-medium">${profile.name || 'Unknown'}</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Degree</span><span class="text-white">${profile.degree || '—'} in ${profile.field_of_study || '—'}</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">CGPA</span><span class="text-white">${profile.cgpa || '—'}/${profile.cgpa_scale || '—'}</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Nationality</span><span class="text-white">${profile.nationality || '—'}</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">Target</span><span class="text-white">${profile.target_degree_level || '—'}</span></div>
-                ${profile.target_countries?.length ? `<div class="flex justify-between"><span class="text-gray-400">Countries</span><span class="text-white">${profile.target_countries.join(', ')}</span></div>` : ''}
-                ${profile.skills?.length ? `<div><span class="text-gray-400 block mb-1">Skills</span><div class="flex flex-wrap gap-1">${profile.skills.slice(0, 10).map(s => `<span class="px-2 py-0.5 rounded-full bg-navy-700 text-xs text-gray-300">${s}</span>`).join('')}</div></div>` : ''}
-                ${profile.missing_fields?.length ? `<div class="mt-2 p-2 rounded-lg fog-badge text-xs"><strong>⚠️ Missing:</strong> ${profile.missing_fields.join(', ')}</div>` : ''}
+            <div class="space-y-2 text-xs">
+                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Student Name</span><span class="text-white font-semibold">${profile.name || 'Unknown'}</span></div>
+                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Degree & Field</span><span class="text-white">${profile.degree || '—'} in ${profile.field_of_study || '—'}</span></div>
+                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">CGPA (Reported)</span><span class="text-amber-beacon font-bold">${profile.cgpa || '—'} / ${profile.cgpa_scale || '10.0'}</span></div>
+                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Nationality</span><span class="text-white">${profile.nationality || '—'}</span></div>
+                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Target Countries</span><span class="text-white">${profile.target_countries?.join(', ') || 'Global'}</span></div>
+                ${profile.skills?.length ? `<div><span class="text-gray-400 block mb-1">Confirmed Skills</span><div class="flex flex-wrap gap-1">${profile.skills.slice(0, 8).map(s => `<span class="px-2 py-0.5 rounded-full bg-navy-800 text-[10px] text-gray-300 border border-navy-700">${s}</span>`).join('')}</div></div>` : ''}
             </div>
         `;
     }
@@ -867,66 +1010,63 @@
     function showTopMatches(matches) {
         const section = document.getElementById('results-section');
         section.classList.remove('section-hidden');
+        document.getElementById('top-beacons-count').textContent = `${matches.length} Top Matches`;
 
         const container = document.getElementById('results-cards');
         container.innerHTML = matches.map((m, i) => {
             const opp = m.opportunity || {};
-            const name = opp.name?.value || opp.name || 'Unknown';
+            const name = opp.name?.value || opp.name || 'Unknown Opportunity';
             const inst = opp.institution?.value || opp.institution || '';
             const country = opp.country || '';
             const score = m.fit_score || 0;
             const breakdown = m.fit_breakdown || {};
             const cost = m.true_cost || {};
+            const verdict = m.skeptic_verdict || 'survives';
 
-            // Skeptic verdict
-            const verdictColor = m.skeptic_verdict === 'rejected' ? 'text-red-400' :
-                                m.skeptic_verdict === 'weakened' ? 'text-yellow-400' : 'text-green-400';
+            const verdictBadge = verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                verdict === 'weakened' ? 'fog-badge' : 'verified-badge';
 
             return `
-                <div class="rounded-xl p-4 border border-navy-700 bg-navy-800/30 hover:border-amber-beacon/30 transition-all animate-slide-up" style="animation-delay: ${i * 0.1}s">
+                <div class="rounded-xl p-4 border border-navy-700 bg-navy-850/80 hover:border-amber-beacon/50 transition-all animate-slide-up" style="animation-delay: ${i * 0.05}s">
                     <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
-                            <h3 class="font-display font-semibold text-white text-sm">${i + 1}. ${name}</h3>
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold text-amber-beacon">#${i + 1}</span>
+                                <h3 class="font-display font-semibold text-white text-sm leading-tight">${name}</h3>
+                            </div>
                             <p class="text-xs text-gray-400">${inst} · ${country}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
-                            <div class="text-xs text-gray-500">fit score</div>
+                            <div class="text-xl font-extrabold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
+                            <div class="text-[10px] text-gray-400">fit score</div>
                         </div>
                     </div>
 
-                    <!-- Score breakdown bars -->
-                    <div class="space-y-1 mb-3">
+                    <!-- Breakdown bars -->
+                    <div class="space-y-1 my-2.5 p-2 rounded-lg bg-navy-900/60 border border-navy-800 text-[11px]">
                         ${renderScoreBar('Academic', breakdown.academic_fit, 25)}
-                        ${renderScoreBar('Field', breakdown.field_fit, 20)}
+                        ${renderScoreBar('Field Match', breakdown.field_fit, 20)}
                         ${renderScoreBar('Funding', breakdown.funding_fit, 20)}
                         ${renderScoreBar('Eligibility', breakdown.eligibility_fit, 15)}
                         ${renderScoreBar('Deadline', breakdown.deadline_feasibility, 10)}
-                        ${renderScoreBar('Affordability', breakdown.affordability, 10)}
                     </div>
 
-                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-2">${m.why_it_fits}</p>` : ''}
+                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-2 leading-relaxed">${m.why_it_fits}</p>` : ''}
 
-                    <!-- True Cost -->
+                    <!-- True Cost Highlight in INR -->
                     ${cost.out_of_pocket_yearly_inr != null ? `
-                        <div class="p-2 rounded-lg bg-navy-900/50 text-xs mb-2">
-                            <span class="text-gray-400">Family must pay:</span>
-                            <span class="font-semibold ${cost.is_fully_funded ? 'text-green-400' : 'text-amber-beacon'}">
-                                ${cost.is_fully_funded ? '✨ Fully Funded' : `~₹${Math.round(cost.out_of_pocket_yearly_inr).toLocaleString()}/yr`}
+                        <div class="p-2.5 rounded-lg bg-navy-900/80 text-xs mb-2 flex items-center justify-between border border-navy-700/60">
+                            <span class="text-gray-400">Family Out-of-Pocket:</span>
+                            <span class="font-bold ${cost.is_fully_funded ? 'text-green-400' : 'text-amber-beacon'}">
+                                ${cost.is_fully_funded ? '✨ Fully Funded (₹0 Out-of-Pocket)' : `~₹${Math.round(cost.out_of_pocket_yearly_inr).toLocaleString()}/yr`}
                             </span>
-                            ${cost.out_of_pocket_yearly_local != null ? `<span class="text-gray-500 ml-1">(${cost.currency} ${Math.round(cost.out_of_pocket_yearly_local).toLocaleString()})</span>` : ''}
                         </div>
                     ` : ''}
 
-                    <!-- Missing requirements -->
-                    ${m.missing_requirements?.length ? `
-                        <div class="flex flex-wrap gap-1 mb-2">
-                            ${m.missing_requirements.map(r => `<span class="px-2 py-0.5 rounded-full fog-badge text-xs">⚠️ ${r}</span>`).join('')}
-                        </div>
-                    ` : ''}
-
-                    <!-- Source link -->
-                    ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-xs text-amber-beacon/70 hover:text-amber-beacon transition-colors">🔗 View Source →</a>` : ''}
+                    <div class="flex items-center justify-between pt-1">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full ${verdictBadge}">Skeptic: ${verdict}</span>
+                        ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-xs text-amber-beacon hover:underline flex items-center gap-1">Source Website →</a>` : ''}
+                    </div>
                 </div>
             `;
         }).join('');
@@ -937,83 +1077,77 @@
         const color = pct >= 70 ? 'bg-green-400' : pct >= 40 ? 'bg-amber-beacon' : 'bg-red-400';
         return `
             <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500 w-20">${label}</span>
+                <span class="text-gray-400 w-20 truncate">${label}</span>
                 <div class="score-bar flex-1"><div class="score-bar-fill ${color}" style="width: ${pct}%"></div></div>
-                <span class="text-xs text-gray-500 w-8 text-right">${value || 0}/${max}</span>
+                <span class="text-gray-400 w-9 text-right font-mono">${value || 0}/${max}</span>
             </div>
         `;
     }
 
-    // ─── Map ─────────────────────────────────────────────────────────────
     function showMap(matches) {
         const section = document.getElementById('map-section');
         section.classList.remove('section-hidden');
 
         if (!map) {
-            map = L.map('merit-map').setView([30, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
+            map = L.map('merit-map').setView([45, 10], 2);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
                 maxZoom: 18,
             }).addTo(map);
         }
 
-        // Clear old markers
         markers.forEach(m => map.removeLayer(m));
         markers = [];
 
-        // Country coordinates (rough center)
         const countryCoords = {
-            'Canada': [56, -106], 'Germany': [51, 10], 'Singapore': [1.35, 103.8],
-            'USA': [39, -98], 'UK': [54, -2], 'Netherlands': [52, 5.7],
-            'Sweden': [62, 15], 'Switzerland': [47, 8], 'Australia': [-25, 134],
-            'France': [46, 2], 'Japan': [36, 138], 'South Korea': [36, 128],
-            'India': [21, 78], 'China': [35, 105], 'Finland': [64, 26],
-            'Norway': [60, 8], 'Denmark': [56, 10], 'Austria': [47.5, 13.5],
-            'Ireland': [53, -8], 'Belgium': [50.8, 4], 'Italy': [42, 12.5],
-            'Spain': [40, -4], 'New Zealand': [-41, 174],
+            'Germany': [51.1657, 10.4515], 'Canada': [56.1304, -106.3468],
+            'Singapore': [1.3521, 103.8198], 'Netherlands': [52.1326, 5.2913],
+            'Sweden': [60.1282, 18.6435], 'UK': [55.3781, -3.4360],
+            'United Kingdom': [55.3781, -3.4360], 'France': [46.2276, 2.2137],
+            'Switzerland': [46.8182, 8.2275], 'USA': [37.0902, -95.7129],
         };
 
         matches.forEach((m, i) => {
-            const country = m.opportunity?.country || '';
-            const coords = countryCoords[country];
+            const opp = m.opportunity || {};
+            const country = opp.country || '';
+            let coords = countryCoords[country];
             if (!coords) return;
 
+            const jitterLat = coords[0] + (Math.sin(i * 1.5) * 1.2);
+            const jitterLng = coords[1] + (Math.cos(i * 1.5) * 1.2);
+
             const score = m.fit_score || 0;
-            const name = m.opportunity?.name?.value || m.opportunity?.name || 'Unknown';
+            const name = opp.name?.value || opp.name || 'Scholarship';
             const color = score >= 70 ? '#22c55e' : score >= 50 ? '#F5B53D' : '#ef4444';
-            const size = Math.max(8, Math.min(20, score / 5));
 
             const icon = L.divIcon({
-                html: `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 0 10px ${color}80;"></div>`,
-                iconSize: [size, size],
+                html: `<div style="width:16px;height:16px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 0 10px ${color}90;"></div>`,
+                iconSize: [16, 16],
                 className: '',
             });
 
-            const marker = L.marker(coords, { icon }).addTo(map);
+            const marker = L.marker([jitterLat, jitterLng], { icon }).addTo(map);
             marker.bindPopup(`
-                <div style="font-family:Inter,sans-serif;min-width:200px">
-                    <h4 style="font-weight:600;margin:0 0 4px">${name}</h4>
-                    <p style="margin:0;color:#666;font-size:12px">${m.opportunity?.institution?.value || ''}</p>
-                    <p style="margin:4px 0;font-size:13px">Fit Score: <strong style="color:${color}">${score}</strong>/100</p>
-                    ${m.true_cost?.is_fully_funded ? '<p style="color:#22c55e;font-size:12px">✨ Fully Funded</p>' : ''}
+                <div style="font-family:Inter,sans-serif;min-width:210px;padding:4px">
+                    <h4 style="font-weight:700;margin:0 0 4px;font-size:13px">${name}</h4>
+                    <p style="margin:0;color:#666;font-size:11px">${opp.institution?.value || country}</p>
+                    <p style="margin:6px 0 0;font-size:12px">Fit Score: <strong style="color:${color}">${score}</strong>/100</p>
                 </div>
             `);
             markers.push(marker);
         });
 
-        // Fit bounds if we have markers
         if (markers.length > 0) {
             const group = L.featureGroup(markers);
             map.fitBounds(group.getBounds().pad(0.3));
         }
     }
 
-    // ─── Table ──────────────────────────────────────────────────────────
     function showOpportunitiesTable(matches) {
         const section = document.getElementById('table-section');
         section.classList.remove('section-hidden');
-
         const tbody = document.getElementById('table-body');
+
         tbody.innerHTML = matches.map((m, i) => {
             const opp = m.opportunity || {};
             const name = opp.name?.value || opp.name || '—';
@@ -1022,54 +1156,52 @@
             const score = m.fit_score || 0;
             const cost = m.true_cost?.out_of_pocket_yearly_inr;
             const deadline = opp.deadline?.value || '—';
-            const verdict = m.skeptic_verdict || 'pending';
+            const verdict = m.skeptic_verdict || 'survives';
 
             const verdictBadge = verdict === 'survives' ? 'verified-badge' :
-                               verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                               verdict === 'weakened' ? 'fog-badge' : 'bg-navy-700 text-gray-400';
+                                verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'fog-badge';
 
             return `
-                <tr class="border-b border-navy-800/50 hover:bg-navy-800/30 transition-colors">
-                    <td class="py-2 pr-4 text-gray-500">${i + 1}</td>
-                    <td class="py-2 pr-4 text-white font-medium">${name}</td>
-                    <td class="py-2 pr-4 text-gray-300">${inst}</td>
-                    <td class="py-2 pr-4 text-gray-300">${country}</td>
-                    <td class="py-2 pr-4"><span class="font-semibold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</span></td>
-                    <td class="py-2 pr-4 text-gray-300">${cost != null ? `₹${Math.round(cost).toLocaleString()}` : '—'}</td>
-                    <td class="py-2 pr-4 text-gray-300">${deadline}</td>
-                    <td class="py-2"><span class="px-2 py-0.5 rounded-full text-xs ${verdictBadge}">${verdict}</span></td>
+                <tr class="border-b border-navy-800/60 hover:bg-navy-800/40 transition-colors">
+                    <td class="py-2.5 pr-3 text-gray-500">${i + 1}</td>
+                    <td class="py-2.5 pr-3 text-white font-medium">${name}</td>
+                    <td class="py-2.5 pr-3 text-gray-300">${inst}</td>
+                    <td class="py-2.5 pr-3 text-gray-300">${country}</td>
+                    <td class="py-2.5 pr-3 font-bold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</td>
+                    <td class="py-2.5 pr-3 text-gray-300">${cost != null ? `₹${Math.round(cost).toLocaleString()}` : '—'}</td>
+                    <td class="py-2.5 pr-3 text-gray-400">${deadline}</td>
+                    <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] ${verdictBadge}">${verdict}</span></td>
                 </tr>
             `;
         }).join('');
     }
 
-    // ─── Roadmap ─────────────────────────────────────────────────────────
     function showRoadmap(roadmap) {
         const section = document.getElementById('roadmap-section');
         section.classList.remove('section-hidden');
-
         const container = document.getElementById('roadmap-timeline');
+
         container.innerHTML = (roadmap.tasks || []).map((task, i) => {
-            const priorityColor = task.priority === 'high' ? 'border-red-400 bg-red-400/10' :
-                                 task.priority === 'medium' ? 'border-amber-beacon bg-amber-beacon/10' :
-                                 'border-navy-600 bg-navy-800/30';
+            const priorityBadge = task.priority === 'high' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                 task.priority === 'medium' ? 'bg-amber-beacon/20 text-amber-beacon border border-amber-beacon/30' :
+                                 'bg-navy-700 text-gray-400';
 
             return `
-                <div class="flex gap-3 animate-slide-up" style="animation-delay: ${i * 0.05}s">
+                <div class="flex gap-3 animate-slide-up" style="animation-delay: ${i * 0.04}s">
                     <div class="flex flex-col items-center">
                         <div class="w-3 h-3 rounded-full bg-amber-beacon mt-1"></div>
                         ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1 bg-navy-700"></div>' : ''}
                     </div>
-                    <div class="flex-1 pb-4">
-                        <div class="rounded-lg p-3 border ${priorityColor}">
+                    <div class="flex-1 pb-3">
+                        <div class="rounded-xl p-3 border border-navy-700 bg-navy-850/80">
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="font-medium text-sm text-white">${task.title}</h4>
-                                ${task.due_date ? `<span class="text-xs text-gray-400">${task.due_date}</span>` : ''}
+                                <h4 class="font-medium text-xs text-white">${task.title}</h4>
+                                ${task.due_date ? `<span class="text-[11px] text-amber-beacon font-mono">${task.due_date}</span>` : ''}
                             </div>
-                            <p class="text-xs text-gray-400">${task.description}</p>
-                            <div class="flex gap-2 mt-1">
-                                <span class="text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">${task.category}</span>
-                                <span class="text-xs px-2 py-0.5 rounded-full ${task.priority === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-navy-700 text-gray-400'}">${task.priority}</span>
+                            <p class="text-xs text-gray-400 mb-2">${task.description}</p>
+                            <div class="flex gap-2">
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-navy-750 text-gray-400">${task.category}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded ${priorityBadge}">${task.priority} priority</span>
                             </div>
                         </div>
                     </div>
@@ -1078,28 +1210,21 @@
         }).join('');
     }
 
-    // ─── SOP ─────────────────────────────────────────────────────────────
     function showSOP(sop) {
         const section = document.getElementById('sop-section');
         section.classList.remove('section-hidden');
-
         const div = document.getElementById('sop-content');
+
         div.innerHTML = `
-            <div class="mb-4 p-3 rounded-lg bg-navy-900/50">
-                <p class="text-xs text-gray-400 mb-1">Prepared for: <span class="text-amber-beacon">${sop.target_opportunity}</span></p>
-                ${sop.placeholders_used?.length ? `<p class="text-xs fog-badge inline-block px-2 py-1 rounded mt-1">⚠️ Contains placeholders: ${sop.placeholders_used.join(', ')}</p>` : ''}
+            <div class="mb-3 p-3 rounded-xl bg-navy-900/80 border border-navy-800">
+                <span class="text-xs text-gray-400">Target Opportunity: </span>
+                <span class="text-xs text-amber-beacon font-semibold">${sop.target_opportunity}</span>
             </div>
-            <div class="whitespace-pre-wrap text-gray-300 leading-relaxed">${sop.sop_text}</div>
+            <div class="whitespace-pre-wrap text-xs leading-relaxed text-gray-200 p-4 rounded-xl bg-navy-900/60 border border-navy-800 font-mono">${sop.sop_text}</div>
             ${sop.document_checklist?.length ? `
-                <div class="mt-4 p-3 rounded-lg border border-navy-700">
-                    <h4 class="text-sm font-medium text-white mb-2">📋 Document Checklist</h4>
-                    <ul class="space-y-1">${sop.document_checklist.map(d => `<li class="text-xs text-gray-400 flex items-center gap-2"><span>☐</span>${d}</li>`).join('')}</ul>
-                </div>
-            ` : ''}
-            ${sop.application_steps?.length ? `
-                <div class="mt-3 p-3 rounded-lg border border-navy-700">
-                    <h4 class="text-sm font-medium text-white mb-2">🪜 Application Steps</h4>
-                    <ol class="space-y-1 list-decimal list-inside">${sop.application_steps.map(s => `<li class="text-xs text-gray-400">${s}</li>`).join('')}</ol>
+                <div class="mt-4 p-3 rounded-xl border border-navy-800 bg-navy-900/40">
+                    <h4 class="text-xs font-semibold text-white mb-2">📋 Verified Document Checklist</h4>
+                    <ul class="space-y-1">${sop.document_checklist.map(d => `<li class="text-xs text-gray-400 flex items-center gap-2"><span>☑</span>${d}</li>`).join('')}</ul>
                 </div>
             ` : ''}
         `;
@@ -1107,7 +1232,10 @@
 
     function copySOP() {
         const text = document.getElementById('sop-content')?.innerText;
-        if (text) navigator.clipboard.writeText(text);
+        if (text) {
+            navigator.clipboard.writeText(text);
+            alert('SOP copied to clipboard!');
+        }
     }
 
     function downloadSOP() {
@@ -1120,10 +1248,8 @@
         a.click();
     }
 
-    // ─── What-If ────────────────────────────────────────────────────────
     async function runWhatIf() {
         if (!currentRunId) return;
-
         const params = {};
         const ielts = document.getElementById('wi-ielts').value;
         if (ielts) params.ielts_score = parseFloat(ielts);
@@ -1152,70 +1278,109 @@
     function showWhatIfResults(matches) {
         const div = document.getElementById('whatif-results');
         if (!matches?.length) {
-            div.innerHTML = '<p class="text-gray-500 text-sm">No results to show.</p>';
+            div.innerHTML = '<p class="text-gray-500 text-xs">No opportunities affected by these parameters.</p>';
             return;
         }
 
         div.innerHTML = `
-            <div class="space-y-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 ${matches.map((m, i) => `
-                    <div class="flex items-center justify-between p-2 rounded-lg bg-navy-800/50">
-                        <span class="text-sm text-white">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || '—'}</span>
-                        <span class="font-bold ${m.fit_score >= 70 ? 'text-green-400' : m.fit_score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${m.fit_score}</span>
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-navy-850 border border-navy-700 text-xs">
+                        <span class="text-white truncate pr-2">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || 'Opportunity'}</span>
+                        <span class="font-bold px-2 py-0.5 rounded ${m.fit_score >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-amber-beacon/20 text-amber-beacon'}">${m.fit_score}</span>
                     </div>
                 `).join('')}
             </div>
         `;
     }
 
-    // ─── Calendar ────────────────────────────────────────────────────────
     function downloadCalendar() {
         if (!currentRunId) return;
         window.open(`/api/run/${currentRunId}/calendar.ics`);
     }
 
-    // ─── Persona Switch ─────────────────────────────────────────────────
-    async function switchPersona() {
-        // Load persona B and run again
-        await loadDemo('persona_b');
-        await startRun();
+    async function openReplayModal() {
+        document.getElementById('replay-modal').classList.remove('section-hidden');
+        const listEl = document.getElementById('runs-list');
+        listEl.innerHTML = '<p class="text-xs text-gray-500">Fetching saved runs...</p>';
+        try {
+            const resp = await fetch('/api/runs');
+            const data = await resp.json();
+            if (!data.runs?.length) {
+                listEl.innerHTML = '<p class="text-xs text-gray-400">No saved runs found on disk.</p>';
+                return;
+            }
+            listEl.innerHTML = data.runs.map(r => `
+                <div onclick="selectSavedRun('${r.run_id}')"
+                     class="p-3 rounded-xl bg-navy-850 hover:bg-navy-800 border border-navy-700 hover:border-amber-beacon/50 cursor-pointer flex items-center justify-between transition-all">
+                    <div>
+                        <span class="text-xs font-semibold text-white block">${r.profile_name || 'Anonymous Student'}</span>
+                        <span class="text-[10px] font-mono text-gray-400">${r.run_id}</span>
+                    </div>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full ${r.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-navy-700 text-gray-400'}">${r.status}</span>
+                </div>
+            `).join('');
+        } catch (err) {
+            listEl.innerHTML = '<p class="text-xs text-red-400">Failed to load runs.</p>';
+        }
     }
 
-    // ─── Utilities ──────────────────────────────────────────────────────
+    function closeReplayModal() {
+        document.getElementById('replay-modal').classList.add('section-hidden');
+    }
+
+    async function selectSavedRun(runId) {
+        closeReplayModal();
+        currentRunId = runId;
+        try {
+            const resp = await fetch(`/api/run/${runId}/result`);
+            const data = await resp.json();
+            displayResults(data);
+            addLog('done', 'HarborMaster', `Replayed run ${runId} from disk.`);
+        } catch (err) {
+            console.error('Failed to load selected run:', err);
+        }
+    }
+
     function resetUI() {
         eventCount = 0;
-        agentStates = {};
         document.getElementById('event-count').textContent = '0 events';
-        document.getElementById('agent-panel').innerHTML = `
-            <div class="text-center text-gray-500 text-sm py-4">
-                <div class="loading-dots text-2xl">
-                    <span>.</span><span>.</span><span>.</span>
-                </div>
-                <p class="mt-2">Initializing agents...</p>
-            </div>
-        `;
         document.getElementById('event-log').innerHTML = '';
         document.getElementById('debate-strip').innerHTML = '';
 
+        // Reset agent tiles
+        Object.keys(AGENT_NAMES).forEach(agent => {
+            const pip = document.getElementById(`pip-${agent}`);
+            if (pip) {
+                pip.className = 'p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all';
+            }
+        });
+
         // Hide result sections
         ['debate-section', 'profile-section', 'results-section', 'map-section',
-         'whatif-section', 'roadmap-section', 'sop-section', 'table-section',
-         'diff-section'].forEach(id => {
-            document.getElementById(id).classList.add('section-hidden');
+         'whatif-section', 'roadmap-section', 'sop-section', 'table-section'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('section-hidden');
         });
     }
 
     function updateRunButton(state) {
         const btn = document.getElementById('run-btn');
-        if (state === 'running') {
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Agents Working...';
-            btn.classList.add('opacity-70', 'cursor-not-allowed');
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = '🏮 Run MeritMap';
-            btn.classList.remove('opacity-70', 'cursor-not-allowed');
-        }
+        const topBtn = document.getElementById('top-run-btn');
+        const isRunning = state === 'running';
+
+        [btn, topBtn].forEach(b => {
+            if (!b) return;
+            b.disabled = isRunning;
+            b.innerHTML = isRunning
+                ? '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Charting Course...'
+                : '<span>🏮</span> <span>Chart Education Route</span>';
+            if (isRunning) {
+                b.classList.add('opacity-70', 'cursor-not-allowed');
+            } else {
+                b.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+        });
     }
     </script>
 </body>
