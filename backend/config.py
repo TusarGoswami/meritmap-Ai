@@ -13,11 +13,11 @@ load_dotenv(_PROJECT_ROOT / ".env")
 
 # ─── LLM ───
 LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "gemini")
-ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
-GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-LLM_FAST_MODEL: str = os.getenv("LLM_FAST_MODEL", "gemini-2.0-flash")
-LLM_STRONG_MODEL: str = os.getenv("LLM_STRONG_MODEL", "gemini-2.5-flash")
+ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "").strip()
+GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "").strip()
+OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "").strip()
+LLM_FAST_MODEL: str = os.getenv("LLM_FAST_MODEL", "gemini-3.5-flash").strip()
+LLM_STRONG_MODEL: str = os.getenv("LLM_STRONG_MODEL", "gemini-3.5-flash").strip()
 
 # ─── Search ───
 TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
