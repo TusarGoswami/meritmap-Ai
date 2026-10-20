@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeritMap — Chart Your Way to Funded Education</title>
+    <meta name="description" content="AI-powered multi-agent scholarship finder. Upload your profile, let our agents discover, verify, and rank real opportunities worldwide.">
+    <link rel="icon" href="/assets/logo.png" type="image/png">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwindcss.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#e8ecf4', 100: '#c5cde3', 200: '#9eabd0',
+                            300: '#7789bd', 400: '#5a70ae', 500: '#3d579f',
+                            600: '#2d4380', 700: '#1e3061', 800: '#0f1d42',
+                            900: '#0C1E41', 950: '#060f21',
+                        },
+                        amber: {
+                            beacon: '#F5B53D',
+                            glow: '#FFC94D',
+                            fog: '#D4A03A',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Outfit', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'beam-pulse': 'beamPulse 2s ease-in-out infinite',
+                        'beam-glow': 'beamGlow 1.5s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        beamPulse: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.05)' },
+                        },
+                        beamGlow: {
+                            '0%, 100%': { boxShadow: '0 0 5px rgba(245,181,61,0.3)' },
+                            '50%': { boxShadow: '0 0 25px rgba(245,181,61,0.6), 0 0 50px rgba(245,181,61,0.2)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f1d42; }
+        ::-webkit-scrollbar-thumb { background: #3d579f; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #F5B53D; }
+
+        /* Lighthouse beam effect */
+        .beam-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .beam-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(245,181,61,0.08) 10deg, transparent 20deg);
+            animation: beamRotate 6s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes beamRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Agent card glow when active */
+        .agent-working {
+            animation: beamGlow 1.5s ease-in-out infinite;
+            border-color: #F5B53D !important;
+        }
+
+        /* Fog effect for unverified data */
+        .fog-badge {
+            background: linear-gradient(135deg, rgba(245,181,61,0.2), rgba(212,160,58,0.1));
+            border: 1px solid rgba(245,181,61,0.3);
+            color: #F5B53D;
+        }
+
+        /* Verified badge */
+        .verified-badge {
+            background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1));
+            border: 1px solid rgba(34,197,94,0.3);
+            color: #22c55e;
+        }
+
+        /* Evidence popover */
+        .evidence-popover {
+            display: none;
+            position: absolute;
+            z-index: 50;
+            width: 300px;
+            background: #1e3061;
+            border: 1px solid #3d579f;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .evidence-trigger:hover .evidence-popover {
+            display: block;
+        }
+
+        /* Glass card */
+        .glass-card {
+            background: rgba(15, 29, 66, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(61, 87, 159, 0.3);
+        }
+
+        /* Score bar */
+        .score-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: #1e3061;
+            overflow: hidden;
+        }
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.8s ease-out;
+        }
+
+        /* Map container */
+        #merit-map {
+            height: 400px;
+            border-radius: 12px;
+            border: 1px solid rgba(61, 87, 159, 0.3);
+        }
+
+        /* Debate strip */
+        .debate-beacon { border-left: 3px solid #F5B53D; }
+        .debate-skeptic { border-left: 3px solid #ef4444; }
+
+        /* Hide sections until needed */
+        .section-hidden { display: none; }
+
+        /* Loading dots */
+        .loading-dots span {
+            animation: blink 1.4s infinite both;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+        }
+
+        /* Trust meter */
+        .trust-beam { filter: drop-shadow(0 0 4px rgba(245,181,61,0.5)); }
+    </style>
+</head>
+<body class="bg-navy-950 text-gray-100 font-sans min-h-screen">
+
+    <!-- ─── HEADER ─── -->
+    <header class="sticky top-0 z-50 glass-card border-b border-navy-600/30">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="/assets/logo.png" alt="MeritMap Logo" class="w-10 h-10 animate-float">
+                <div>
+                    <h1 class="font-display font-bold text-xl text-white">MeritMap</h1>
+                    <p class="text-xs text-amber-beacon/70 font-medium tracking-wide">Chart your way to funded education</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="document.getElementById('replay-modal').classList.toggle('section-hidden')"
+                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
+                    ↻ Replay
+                </button>
+                <a href="https://github.com" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ─── MAIN LAYOUT ─── -->
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- ─── LEFT PANEL: FORM ─── -->
+            <aside class="lg:col-span-3 space-y-4">
+                <div class="glass-card rounded-2xl p-5">
+                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                        <span class="text-amber-beacon">⚓</span> Student Profile
+                    </h2>
+                    <form id="run-form" class="space-y-3" enctype="multipart/form-data">
+                        <!-- Document uploads -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Resume (PDF)</label>
+                            <input type="file" id="resume" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer file:text-xs bg-navy-800 rounded-lg border border-navy-600 text-gray-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Marksheet (PDF)</label>
+                            <input type="file" id="marksheet" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer file:text-xs bg-navy-800 rounded-lg border border-navy-600 text-gray-300">
+                        </div>
+
+                        <!-- Profile fields -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Name</label>
+                                <input type="text" id="name" placeholder="Full name" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Nationality</label>
+                                <input type="text" id="nationality" placeholder="e.g. Indian" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">GitHub Username</label>
+                            <input type="text" id="github_username" placeholder="username" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Degree</label>
+                                <input type="text" id="degree" placeholder="B.Tech" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Field</label>
+                                <input type="text" id="field_of_study" placeholder="CS, Biology..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">CGPA</label>
+                                <input type="number" id="cgpa" step="0.1" placeholder="8.2" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Scale</label>
+                                <select id="cgpa_scale" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none transition-colors">
+                                    <option value="10">/ 10</option>
+                                    <option value="4">/ 4</option>
+                                    <option value="5">/ 5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Countries (comma-sep)</label>
+                            <input type="text" id="target_countries" placeholder="Canada, Germany..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Degree Level</label>
+                            <select id="target_degree_level" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none transition-colors">
+                                <option value="Masters">Masters</option>
+                                <option value="PhD">PhD</option>
+                                <option value="Bachelors">Bachelors</option>
+                                <option value="Postdoc">Postdoc</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Target Fields (comma-sep)</label>
+                            <input type="text" id="target_fields" placeholder="AI, ML, Data Science..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Extra URLs (one per line)</label>
+                            <textarea id="extra_urls" rows="2" placeholder="LinkedIn, portfolio..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors resize-none"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1">Max Budget/yr ($)</label>
+                                <input type="number" id="budget" placeholder="5000" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                            </div>
+                            <div class="flex items-end pb-1">
+                                <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+                                    <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-600 text-amber-beacon focus:ring-amber-beacon">
+                                    Needs full funding
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Chaos Mode -->
+                        <div class="pt-2 border-t border-navy-700">
+                            <label class="flex items-center gap-2 text-xs cursor-pointer group">
+                                <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-600 text-red-500 focus:ring-red-500">
+                                <span class="text-gray-400 group-hover:text-red-400 transition-colors">🌊 Chaos Mode (inject failures)</span>
+                            </label>
+                        </div>
+
+                        <!-- Demo buttons -->
+                        <div class="flex gap-2 pt-2">
+                            <button type="button" onclick="loadDemo('rahul')" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
+                                📋 Rahul
+                            </button>
+                            <button type="button" onclick="loadDemo('persona_b')" class="flex-1 text-xs px-2 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/50 text-gray-400 hover:text-amber-beacon transition-all">
+                                📋 Persona B
+                            </button>
+                        </div>
+
+                        <!-- Run button -->
+                        <button type="submit" id="run-btn" class="w-full py-3 mt-2 rounded-xl font-display font-semibold text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/40 transform hover:scale-[1.02] active:scale-[0.98]">
+                            🏮 Run MeritMap
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Persona Switch -->
+                <div class="glass-card rounded-2xl p-4 section-hidden" id="persona-switch-section">
+                    <h3 class="font-display font-semibold text-sm text-white mb-2 flex items-center gap-2">
+                        <span class="text-amber-beacon">🔄</span> Persona Switch
+                    </h3>
+                    <p class="text-xs text-gray-400 mb-3">Compare results with another profile</p>
+                    <button onclick="switchPersona()" class="w-full py-2 text-xs rounded-lg border border-amber-beacon/30 text-amber-beacon hover:bg-amber-beacon/10 transition-all">
+                        Run with Persona B & Compare
+                    </button>
+                </div>
+            </aside>
+
+            <!-- ─── CENTER: AGENT PANEL ─── -->
+            <section class="lg:col-span-5 space-y-4">
+                <!-- Agent Cards -->
+                <div class="glass-card rounded-2xl p-5">
+                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                        <span class="text-amber-beacon">🏮</span> Agent Activity
+                    </h2>
+                    <div id="agent-panel" class="space-y-2">
+                        <!-- Populated dynamically -->
+                        <div class="text-center text-gray-500 text-sm py-8">
+                            <p class="animate-float text-3xl mb-2">🔭</p>
+                            <p>Waiting to chart your course...</p>
+                            <p class="text-xs mt-1 text-gray-600">Upload your profile and click "Run MeritMap"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debate Strip -->
+                <div class="glass-card rounded-2xl p-5 section-hidden" id="debate-section">
+                    <h2 class="font-display font-semibold text-sm text-white mb-3 flex items-center gap-2">
+                        <span class="text-amber-beacon">⚔️</span> Beacon vs Skeptic Debate
+                    </h2>
+                    <div id="debate-strip" class="space-y-2 max-h-64 overflow-y-auto">
+                    </div>
+                </div>
+
+                <!-- Log -->
+                <div class="glass-card rounded-2xl p-5">
+                    <h3 class="font-display font-semibold text-sm text-white mb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <span class="text-amber-beacon">📜</span> Event Log
+                        </span>
+                        <span class="text-xs text-gray-500" id="event-count">0 events</span>
+                    </h3>
+                    <div id="event-log" class="max-h-48 overflow-y-auto space-y-1 text-xs font-mono">
+                        <p class="text-gray-600">No events yet.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── RIGHT: RESULTS ─── -->
+            <section class="lg:col-span-4 space-y-4">
+                <!-- Profile Summary -->
+                <div class="glass-card rounded-2xl p-5 section-hidden" id="profile-section">
+                    <h2 class="font-display font-semibold text-lg text-white mb-3 flex items-center gap-2">
+                        <span class="text-amber-beacon">🧭</span> Profile Summary
+                    </h2>
+                    <div id="profile-summary"></div>
+                </div>
+
+                <!-- Results placeholder -->
+                <div class="glass-card rounded-2xl p-5 section-hidden" id="results-section">
+                    <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                        <span class="text-amber-beacon">🏮</span> Top Beacons
+                    </h2>
+                    <div id="results-cards" class="space-y-3">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ─── FULL WIDTH SECTIONS ─── -->
+
+        <!-- Merit Map (World Map) -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="map-section">
+            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                <span class="text-amber-beacon">🗺️</span> Merit Map
+            </h2>
+            <div id="merit-map"></div>
+        </div>
+
+        <!-- What-If Panel -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="whatif-section">
+            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                <span class="text-amber-beacon">🔮</span> What-If Explorer
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">IELTS Score</label>
+                    <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.0" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">GRE Score</label>
+                    <input type="number" id="wi-gre" min="260" max="340" placeholder="320" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">CGPA (4.0)</label>
+                    <input type="number" id="wi-cgpa" step="0.1" min="0" max="4" placeholder="3.5" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Add Publication</label>
+                    <input type="text" id="wi-pub" placeholder="Paper title" class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <div class="flex-1">
+                    <label class="block text-xs text-gray-400 mb-1">Target Countries (comma-sep)</label>
+                    <input type="text" id="wi-countries" placeholder="USA, UK..." class="w-full px-3 py-1.5 text-sm rounded-lg bg-navy-800 border border-navy-600 text-white focus:border-amber-beacon focus:outline-none">
+                </div>
+                <button onclick="runWhatIf()" class="self-end px-6 py-1.5 text-sm rounded-lg bg-amber-beacon/20 text-amber-beacon border border-amber-beacon/30 hover:bg-amber-beacon/30 transition-all font-medium">
+                    ⚡ Re-score
+                </button>
+            </div>
+            <div id="whatif-results" class="mt-4"></div>
+        </div>
+
+        <!-- Pathfinder Roadmap -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="roadmap-section">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                    <span class="text-amber-beacon">🗓️</span> Pathfinder Roadmap
+                </h2>
+                <button onclick="downloadCalendar()" class="text-xs px-3 py-1.5 rounded-lg border border-amber-beacon/30 text-amber-beacon hover:bg-amber-beacon/10 transition-all">
+                    📅 Download .ics
+                </button>
+            </div>
+            <div id="roadmap-timeline" class="space-y-3"></div>
+        </div>
+
+        <!-- SOP Draft -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="sop-section">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
+                    <span class="text-amber-beacon">📝</span> Statement of Purpose Draft
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-400 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all">📋 Copy</button>
+                    <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-400 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all">💾 Download</button>
+                </div>
+            </div>
+            <div id="sop-content" class="prose prose-invert max-w-none text-sm leading-relaxed"></div>
+        </div>
+
+        <!-- Full Opportunities Table -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="table-section">
+            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                <span class="text-amber-beacon">📊</span> All Discovered Opportunities
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm" id="opportunities-table">
+                    <thead>
+                        <tr class="text-left text-gray-400 border-b border-navy-700">
+                            <th class="pb-2 pr-4">#</th>
+                            <th class="pb-2 pr-4">Name</th>
+                            <th class="pb-2 pr-4">Institution</th>
+                            <th class="pb-2 pr-4">Country</th>
+                            <th class="pb-2 pr-4">Fit</th>
+                            <th class="pb-2 pr-4">Cost/yr</th>
+                            <th class="pb-2 pr-4">Deadline</th>
+                            <th class="pb-2">Verdict</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Persona Diff -->
+        <div class="glass-card rounded-2xl p-5 mt-6 section-hidden" id="diff-section">
+            <h2 class="font-display font-semibold text-lg text-white mb-4 flex items-center gap-2">
+                <span class="text-amber-beacon">🔄</span> Persona Comparison
+            </h2>
+            <div id="diff-content" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+    </main>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="border-t border-navy-800 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-xs text-gray-600">
+                MeritMap — TetraNoodle AI Hackathon 2026 · No real applications are submitted · All data sourced from public websites
+            </p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- ─── APP SCRIPT ─── -->
+    <script>
+    // ─── State ─────────────────────────────────────────────────────────────
+    let currentRunId = null;
+    let eventSource = null;
+    let eventCount = 0;
+    let agentStates = {};
+    let map = null;
+    let markers = [];
+    let lastRunResult = null;
+
+    const AGENT_ICONS = {
+        CartographerAgent: '🗺️', NavigatorAgent: '🧭', ScoutAgent: '🔍',
+        SurveyorAgent: '📐', BeaconAgent: '🏮', SkepticAgent: '🔬',
+        PathfinderAgent: '🛤️', ScribeAgent: '✍️', AuditorAgent: '🔎',
+        HarborMaster: '⚓',
+    };
+
+    const AGENT_NAMES = {
+        CartographerAgent: 'Cartographer', NavigatorAgent: 'Navigator',
+        ScoutAgent: 'Scout', SurveyorAgent: 'Surveyor',
+        BeaconAgent: 'Beacon', SkepticAgent: 'Skeptic',
+        PathfinderAgent: 'Pathfinder', ScribeAgent: 'Scribe',
+        AuditorAgent: 'Auditor', HarborMaster: 'Harbor Master',
+    };
+
+    // ─── Form Handling ───────────────────────────────────────────────────
+    document.getElementById('run-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await startRun();
+    });
+
+    async function loadDemo(persona) {
+        try {
+            const resp = await fetch(`/api/demo/${persona}`);
+            const data = await resp.json();
+            document.getElementById('name').value = data.name || '';
+            document.getElementById('nationality').value = data.nationality || '';
+            document.getElementById('github_username').value = data.github_username || '';
+            document.getElementById('degree').value = data.degree || '';
+            document.getElementById('field_of_study').value = data.field_of_study || '';
+            document.getElementById('cgpa').value = data.cgpa || '';
+            document.getElementById('cgpa_scale').value = data.cgpa_scale || '10';
+            document.getElementById('target_countries').value = (data.target_countries || []).join(', ');
+            document.getElementById('target_degree_level').value = data.target_degree_level || 'Masters';
+            document.getElementById('target_fields').value = (data.target_fields || []).join(', ');
+            document.getElementById('budget').value = data.budget_max_yearly_usd || '';
+            document.getElementById('needs_full_funding').checked = data.needs_full_funding || false;
+        } catch (err) {
+            console.error('Failed to load demo:', err);
+        }
+    }
+
+    async function startRun() {
+        const formData = new FormData();
+
+        // Files
+        const resumeFile = document.getElementById('resume').files[0];
+        const marksheetFile = document.getElementById('marksheet').files[0];
+        if (resumeFile) formData.append('resume', resumeFile);
+        if (marksheetFile) formData.append('marksheet', marksheetFile);
+
+        // Text fields
+        const fields = ['name', 'nationality', 'github_username', 'degree', 'field_of_study', 'target_degree_level'];
+        fields.forEach(f => {
+            const val = document.getElementById(f)?.value;
+            if (val) formData.append(f, val);
+        });
+
+        // Numeric
+        const cgpa = document.getElementById('cgpa').value;
+        if (cgpa) formData.append('cgpa', cgpa);
+        const cgpaScale = document.getElementById('cgpa_scale').value;
+        if (cgpaScale) formData.append('cgpa_scale', cgpaScale);
+        const budget = document.getElementById('budget').value;
+        if (budget) formData.append('budget_max_yearly_usd', budget);
+
+        // Arrays as JSON
+        const countries = document.getElementById('target_countries').value
+            .split(',').map(s => s.trim()).filter(Boolean);
+        formData.append('target_countries', JSON.stringify(countries));
+
+        const tfields = document.getElementById('target_fields').value
+            .split(',').map(s => s.trim()).filter(Boolean);
+        formData.append('target_fields', JSON.stringify(tfields));
+
+        const urls = document.getElementById('extra_urls').value
+            .split('\n').map(s => s.trim()).filter(Boolean);
+        formData.append('extra_urls', JSON.stringify(urls));
+
+        // Booleans
+        formData.append('needs_full_funding', document.getElementById('needs_full_funding').checked);
+        formData.append('chaos_mode', document.getElementById('chaos_mode').checked);
+
+        // Reset UI
+        resetUI();
+
+        // Start run
+        try {
+            const resp = await fetch('/api/run', { method: 'POST', body: formData });
+            const data = await resp.json();
+            currentRunId = data.run_id;
+            connectSSE(data.run_id);
+            updateRunButton('running');
+        } catch (err) {
+            console.error('Failed to start run:', err);
+            addLog('error', 'HarborMaster', 'Failed to start pipeline: ' + err.message);
+        }
+    }
+
+    // ─── SSE Connection ──────────────────────────────────────────────────
+    function connectSSE(runId) {
+        if (eventSource) eventSource.close();
+        eventSource = new EventSource(`/api/run/${runId}/events`);
+
+        eventSource.onmessage = (e) => {
+            try {
+                const event = JSON.parse(e.data);
+                handleEvent(event);
+            } catch (err) {
+                console.error('Failed to parse event:', err);
+            }
+        };
+
+        eventSource.onerror = () => {
+            console.warn('SSE connection error, will retry...');
+        };
+    }
+
+    function handleEvent(event) {
+        eventCount++;
+        document.getElementById('event-count').textContent = `${eventCount} events`;
+
+        // Update agent state
+        updateAgentCard(event);
+
+        // Add to log
+        addLog(event.type, event.agent, event.message);
+
+        // Handle debate events
+        if (event.type === 'debate') {
+            showDebateMessage(event);
+        }
+
+        // Handle completion
+        if (event.type === 'done') {
+            updateRunButton('done');
+            fetchAndDisplayResults();
+        }
+
+        // Handle warnings/recovery
+        if (event.type === 'warning' || event.type === 'recovered') {
+            highlightRecovery(event);
+        }
+    }
+
+    // ─── Agent Cards ─────────────────────────────────────────────────────
+    function updateAgentCard(event) {
+        const panel = document.getElementById('agent-panel');
+        const agentId = event.agent.replace(/\s+/g, '-');
+
+        let card = document.getElementById(`agent-${agentId}`);
+        if (!card) {
+            // Remove placeholder
+            if (panel.querySelector('.text-center')) {
+                panel.innerHTML = '';
+            }
+
+            card = document.createElement('div');
+            card.id = `agent-${agentId}`;
+            card.className = 'rounded-xl p-3 border border-navy-700 bg-navy-800/50 transition-all duration-300 animate-slide-up';
+            card.innerHTML = `
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">${AGENT_ICONS[event.agent] || '🤖'}</span>
+                        <span class="font-medium text-sm text-white">${AGENT_NAMES[event.agent] || event.agent}</span>
+                    </div>
+                    <span class="agent-status text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">idle</span>
+                </div>
+                <p class="agent-message text-xs text-gray-400 truncate"></p>
+            `;
+            panel.appendChild(card);
+            agentStates[agentId] = 'idle';
+        }
+
+        const statusEl = card.querySelector('.agent-status');
+        const msgEl = card.querySelector('.agent-message');
+
+        // Update status
+        let status, statusClass;
+        switch (event.type) {
+            case 'start':
+                status = 'working';
+                statusClass = 'bg-amber-beacon/20 text-amber-beacon';
+                card.classList.add('agent-working');
+                break;
+            case 'progress':
+            case 'tool_call':
+                status = 'working';
+                statusClass = 'bg-amber-beacon/20 text-amber-beacon';
+                break;
+            case 'result':
+            case 'done':
+                status = 'done';
+                statusClass = 'bg-green-500/20 text-green-400';
+                card.classList.remove('agent-working');
+                break;
+            case 'warning':
+                status = 'recovering';
+                statusClass = 'bg-yellow-500/20 text-yellow-400';
+                break;
+            case 'recovered':
+                status = 'recovered';
+                statusClass = 'bg-blue-500/20 text-blue-400';
+                break;
+            case 'error':
+                status = 'failed';
+                statusClass = 'bg-red-500/20 text-red-400';
+                card.classList.remove('agent-working');
+                break;
+            default:
+                status = 'active';
+                statusClass = 'bg-navy-700 text-gray-400';
+        }
+
+        statusEl.textContent = status;
+        statusEl.className = `agent-status text-xs px-2 py-0.5 rounded-full ${statusClass}`;
+        msgEl.textContent = event.message;
+        agentStates[agentId] = status;
+    }
+
+    // ─── Event Log ───────────────────────────────────────────────────────
+    function addLog(type, agent, message) {
+        const log = document.getElementById('event-log');
+        if (log.querySelector('.text-gray-600:first-child:last-child')) {
+            log.innerHTML = '';
+        }
+
+        const colorMap = {
+            start: 'text-blue-400', progress: 'text-gray-300',
+            tool_call: 'text-purple-400', warning: 'text-amber-beacon',
+            recovered: 'text-green-400', debate: 'text-amber-beacon',
+            result: 'text-green-400', error: 'text-red-400',
+            done: 'text-emerald-400', audit: 'text-cyan-400',
+        };
+
+        const entry = document.createElement('div');
+        entry.className = `${colorMap[type] || 'text-gray-400'} animate-fade-in`;
+
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        entry.innerHTML = `<span class="text-gray-600">${time}</span> <span class="text-navy-300">[${agent}]</span> ${message}`;
+
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    // ─── Debate ─────────────────────────────────────────────────────────
+    function showDebateMessage(event) {
+        const section = document.getElementById('debate-section');
+        section.classList.remove('section-hidden');
+
+        const strip = document.getElementById('debate-strip');
+        const isBeacon = event.agent === 'BeaconAgent';
+
+        const msg = document.createElement('div');
+        msg.className = `p-2 rounded-lg text-xs animate-slide-up ${isBeacon ? 'debate-beacon bg-amber-beacon/5' : 'debate-skeptic bg-red-500/5'}`;
+        msg.innerHTML = `
+            <span class="font-medium ${isBeacon ? 'text-amber-beacon' : 'text-red-400'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
+            <span class="text-gray-300">${event.message}</span>
+        `;
+        strip.appendChild(msg);
+        strip.scrollTop = strip.scrollHeight;
+    }
+
+    function highlightRecovery(event) {
+        // Recovery events are already shown in the log with amber/green colors
+    }
+
+    // ─── Results ────────────────────────────────────────────────────────
+    async function fetchAndDisplayResults() {
+        if (!currentRunId) return;
+
+        try {
+            const resp = await fetch(`/api/run/${currentRunId}/result`);
+            const data = await resp.json();
+            lastRunResult = data;
+            displayResults(data);
+        } catch (err) {
+            console.error('Failed to fetch results:', err);
+        }
+    }
+
+    function displayResults(data) {
+        // Profile summary
+        if (data.profile) {
+            showProfileSummary(data.profile);
+        }
+
+        // Top matches
+        if (data.top_matches && data.top_matches.length > 0) {
+            showTopMatches(data.top_matches);
+            showMap(data.top_matches);
+            showOpportunitiesTable(data.match_results || data.top_matches);
+            document.getElementById('persona-switch-section').classList.remove('section-hidden');
+            document.getElementById('whatif-section').classList.remove('section-hidden');
+        }
+
+        // Roadmap
+        if (data.roadmap) {
+            showRoadmap(data.roadmap);
+        }
+
+        // SOP
+        if (data.sop) {
+            showSOP(data.sop);
+        }
+    }
+
+    function showProfileSummary(profile) {
+        const section = document.getElementById('profile-section');
+        section.classList.remove('section-hidden');
+
+        const div = document.getElementById('profile-summary');
+        div.innerHTML = `
+            <div class="space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-400">Name</span><span class="text-white font-medium">${profile.name || 'Unknown'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Degree</span><span class="text-white">${profile.degree || '—'} in ${profile.field_of_study || '—'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">CGPA</span><span class="text-white">${profile.cgpa || '—'}/${profile.cgpa_scale || '—'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Nationality</span><span class="text-white">${profile.nationality || '—'}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Target</span><span class="text-white">${profile.target_degree_level || '—'}</span></div>
+                ${profile.target_countries?.length ? `<div class="flex justify-between"><span class="text-gray-400">Countries</span><span class="text-white">${profile.target_countries.join(', ')}</span></div>` : ''}
+                ${profile.skills?.length ? `<div><span class="text-gray-400 block mb-1">Skills</span><div class="flex flex-wrap gap-1">${profile.skills.slice(0, 10).map(s => `<span class="px-2 py-0.5 rounded-full bg-navy-700 text-xs text-gray-300">${s}</span>`).join('')}</div></div>` : ''}
+                ${profile.missing_fields?.length ? `<div class="mt-2 p-2 rounded-lg fog-badge text-xs"><strong>⚠️ Missing:</strong> ${profile.missing_fields.join(', ')}</div>` : ''}
+            </div>
+        `;
+    }
+
+    function showTopMatches(matches) {
+        const section = document.getElementById('results-section');
+        section.classList.remove('section-hidden');
+
+        const container = document.getElementById('results-cards');
+        container.innerHTML = matches.map((m, i) => {
+            const opp = m.opportunity || {};
+            const name = opp.name?.value || opp.name || 'Unknown';
+            const inst = opp.institution?.value || opp.institution || '';
+            const country = opp.country || '';
+            const score = m.fit_score || 0;
+            const breakdown = m.fit_breakdown || {};
+            const cost = m.true_cost || {};
+
+            // Skeptic verdict
+            const verdictColor = m.skeptic_verdict === 'rejected' ? 'text-red-400' :
+                                m.skeptic_verdict === 'weakened' ? 'text-yellow-400' : 'text-green-400';
+
+            return `
+                <div class="rounded-xl p-4 border border-navy-700 bg-navy-800/30 hover:border-amber-beacon/30 transition-all animate-slide-up" style="animation-delay: ${i * 0.1}s">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <h3 class="font-display font-semibold text-white text-sm">${i + 1}. ${name}</h3>
+                            <p class="text-xs text-gray-400">${inst} · ${country}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
+                            <div class="text-xs text-gray-500">fit score</div>
+                        </div>
+                    </div>
+
+                    <!-- Score breakdown bars -->
+                    <div class="space-y-1 mb-3">
+                        ${renderScoreBar('Academic', breakdown.academic_fit, 25)}
+                        ${renderScoreBar('Field', breakdown.field_fit, 20)}
+                        ${renderScoreBar('Funding', breakdown.funding_fit, 20)}
+                        ${renderScoreBar('Eligibility', breakdown.eligibility_fit, 15)}
+                        ${renderScoreBar('Deadline', breakdown.deadline_feasibility, 10)}
+                        ${renderScoreBar('Affordability', breakdown.affordability, 10)}
+                    </div>
+
+                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-2">${m.why_it_fits}</p>` : ''}
+
+                    <!-- True Cost -->
+                    ${cost.out_of_pocket_yearly_inr != null ? `
+                        <div class="p-2 rounded-lg bg-navy-900/50 text-xs mb-2">
+                            <span class="text-gray-400">Family must pay:</span>
+                            <span class="font-semibold ${cost.is_fully_funded ? 'text-green-400' : 'text-amber-beacon'}">
+                                ${cost.is_fully_funded ? '✨ Fully Funded' : `~₹${Math.round(cost.out_of_pocket_yearly_inr).toLocaleString()}/yr`}
+                            </span>
+                            ${cost.out_of_pocket_yearly_local != null ? `<span class="text-gray-500 ml-1">(${cost.currency} ${Math.round(cost.out_of_pocket_yearly_local).toLocaleString()})</span>` : ''}
+                        </div>
+                    ` : ''}
+
+                    <!-- Missing requirements -->
+                    ${m.missing_requirements?.length ? `
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            ${m.missing_requirements.map(r => `<span class="px-2 py-0.5 rounded-full fog-badge text-xs">⚠️ ${r}</span>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    <!-- Source link -->
+                    ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-xs text-amber-beacon/70 hover:text-amber-beacon transition-colors">🔗 View Source →</a>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderScoreBar(label, value, max) {
+        const pct = max > 0 ? ((value || 0) / max * 100) : 0;
+        const color = pct >= 70 ? 'bg-green-400' : pct >= 40 ? 'bg-amber-beacon' : 'bg-red-400';
+        return `
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500 w-20">${label}</span>
+                <div class="score-bar flex-1"><div class="score-bar-fill ${color}" style="width: ${pct}%"></div></div>
+                <span class="text-xs text-gray-500 w-8 text-right">${value || 0}/${max}</span>
+            </div>
+        `;
+    }
+
+    // ─── Map ─────────────────────────────────────────────────────────────
+    function showMap(matches) {
+        const section = document.getElementById('map-section');
+        section.classList.remove('section-hidden');
+
+        if (!map) {
+            map = L.map('merit-map').setView([30, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 18,
+            }).addTo(map);
+        }
+
+        // Clear old markers
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+
+        // Country coordinates (rough center)
+        const countryCoords = {
+            'Canada': [56, -106], 'Germany': [51, 10], 'Singapore': [1.35, 103.8],
+            'USA': [39, -98], 'UK': [54, -2], 'Netherlands': [52, 5.7],
+            'Sweden': [62, 15], 'Switzerland': [47, 8], 'Australia': [-25, 134],
+            'France': [46, 2], 'Japan': [36, 138], 'South Korea': [36, 128],
+            'India': [21, 78], 'China': [35, 105], 'Finland': [64, 26],
+            'Norway': [60, 8], 'Denmark': [56, 10], 'Austria': [47.5, 13.5],
+            'Ireland': [53, -8], 'Belgium': [50.8, 4], 'Italy': [42, 12.5],
+            'Spain': [40, -4], 'New Zealand': [-41, 174],
+        };
+
+        matches.forEach((m, i) => {
+            const country = m.opportunity?.country || '';
+            const coords = countryCoords[country];
+            if (!coords) return;
+
+            const score = m.fit_score || 0;
+            const name = m.opportunity?.name?.value || m.opportunity?.name || 'Unknown';
+            const color = score >= 70 ? '#22c55e' : score >= 50 ? '#F5B53D' : '#ef4444';
+            const size = Math.max(8, Math.min(20, score / 5));
+
+            const icon = L.divIcon({
+                html: `<div style="width:${size}px;height:${size}px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 0 10px ${color}80;"></div>`,
+                iconSize: [size, size],
+                className: '',
+            });
+
+            const marker = L.marker(coords, { icon }).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family:Inter,sans-serif;min-width:200px">
+                    <h4 style="font-weight:600;margin:0 0 4px">${name}</h4>
+                    <p style="margin:0;color:#666;font-size:12px">${m.opportunity?.institution?.value || ''}</p>
+                    <p style="margin:4px 0;font-size:13px">Fit Score: <strong style="color:${color}">${score}</strong>/100</p>
+                    ${m.true_cost?.is_fully_funded ? '<p style="color:#22c55e;font-size:12px">✨ Fully Funded</p>' : ''}
+                </div>
+            `);
+            markers.push(marker);
+        });
+
+        // Fit bounds if we have markers
+        if (markers.length > 0) {
+            const group = L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.3));
+        }
+    }
+
+    // ─── Table ──────────────────────────────────────────────────────────
+    function showOpportunitiesTable(matches) {
+        const section = document.getElementById('table-section');
+        section.classList.remove('section-hidden');
+
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = matches.map((m, i) => {
+            const opp = m.opportunity || {};
+            const name = opp.name?.value || opp.name || '—';
+            const inst = opp.institution?.value || opp.institution || '—';
+            const country = opp.country || '—';
+            const score = m.fit_score || 0;
+            const cost = m.true_cost?.out_of_pocket_yearly_inr;
+            const deadline = opp.deadline?.value || '—';
+            const verdict = m.skeptic_verdict || 'pending';
+
+            const verdictBadge = verdict === 'survives' ? 'verified-badge' :
+                               verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                               verdict === 'weakened' ? 'fog-badge' : 'bg-navy-700 text-gray-400';
+
+            return `
+                <tr class="border-b border-navy-800/50 hover:bg-navy-800/30 transition-colors">
+                    <td class="py-2 pr-4 text-gray-500">${i + 1}</td>
+                    <td class="py-2 pr-4 text-white font-medium">${name}</td>
+                    <td class="py-2 pr-4 text-gray-300">${inst}</td>
+                    <td class="py-2 pr-4 text-gray-300">${country}</td>
+                    <td class="py-2 pr-4"><span class="font-semibold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</span></td>
+                    <td class="py-2 pr-4 text-gray-300">${cost != null ? `₹${Math.round(cost).toLocaleString()}` : '—'}</td>
+                    <td class="py-2 pr-4 text-gray-300">${deadline}</td>
+                    <td class="py-2"><span class="px-2 py-0.5 rounded-full text-xs ${verdictBadge}">${verdict}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // ─── Roadmap ─────────────────────────────────────────────────────────
+    function showRoadmap(roadmap) {
+        const section = document.getElementById('roadmap-section');
+        section.classList.remove('section-hidden');
+
+        const container = document.getElementById('roadmap-timeline');
+        container.innerHTML = (roadmap.tasks || []).map((task, i) => {
+            const priorityColor = task.priority === 'high' ? 'border-red-400 bg-red-400/10' :
+                                 task.priority === 'medium' ? 'border-amber-beacon bg-amber-beacon/10' :
+                                 'border-navy-600 bg-navy-800/30';
+
+            return `
+                <div class="flex gap-3 animate-slide-up" style="animation-delay: ${i * 0.05}s">
+                    <div class="flex flex-col items-center">
+                        <div class="w-3 h-3 rounded-full bg-amber-beacon mt-1"></div>
+                        ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1 bg-navy-700"></div>' : ''}
+                    </div>
+                    <div class="flex-1 pb-4">
+                        <div class="rounded-lg p-3 border ${priorityColor}">
+                            <div class="flex items-center justify-between mb-1">
+                                <h4 class="font-medium text-sm text-white">${task.title}</h4>
+                                ${task.due_date ? `<span class="text-xs text-gray-400">${task.due_date}</span>` : ''}
+                            </div>
+                            <p class="text-xs text-gray-400">${task.description}</p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">${task.category}</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full ${task.priority === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-navy-700 text-gray-400'}">${task.priority}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ─── SOP ─────────────────────────────────────────────────────────────
+    function showSOP(sop) {
+        const section = document.getElementById('sop-section');
+        section.classList.remove('section-hidden');
+
+        const div = document.getElementById('sop-content');
+        div.innerHTML = `
+            <div class="mb-4 p-3 rounded-lg bg-navy-900/50">
+                <p class="text-xs text-gray-400 mb-1">Prepared for: <span class="text-amber-beacon">${sop.target_opportunity}</span></p>
+                ${sop.placeholders_used?.length ? `<p class="text-xs fog-badge inline-block px-2 py-1 rounded mt-1">⚠️ Contains placeholders: ${sop.placeholders_used.join(', ')}</p>` : ''}
+            </div>
+            <div class="whitespace-pre-wrap text-gray-300 leading-relaxed">${sop.sop_text}</div>
+            ${sop.document_checklist?.length ? `
+                <div class="mt-4 p-3 rounded-lg border border-navy-700">
+                    <h4 class="text-sm font-medium text-white mb-2">📋 Document Checklist</h4>
+                    <ul class="space-y-1">${sop.document_checklist.map(d => `<li class="text-xs text-gray-400 flex items-center gap-2"><span>☐</span>${d}</li>`).join('')}</ul>
+                </div>
+            ` : ''}
+            ${sop.application_steps?.length ? `
+                <div class="mt-3 p-3 rounded-lg border border-navy-700">
+                    <h4 class="text-sm font-medium text-white mb-2">🪜 Application Steps</h4>
+                    <ol class="space-y-1 list-decimal list-inside">${sop.application_steps.map(s => `<li class="text-xs text-gray-400">${s}</li>`).join('')}</ol>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    function copySOP() {
+        const text = document.getElementById('sop-content')?.innerText;
+        if (text) navigator.clipboard.writeText(text);
+    }
+
+    function downloadSOP() {
+        const text = document.getElementById('sop-content')?.innerText;
+        if (!text) return;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `meritmap_sop_${currentRunId || 'draft'}.txt`;
+        a.click();
+    }
+
+    // ─── What-If ────────────────────────────────────────────────────────
+    async function runWhatIf() {
+        if (!currentRunId) return;
+
+        const params = {};
+        const ielts = document.getElementById('wi-ielts').value;
+        if (ielts) params.ielts_score = parseFloat(ielts);
+        const gre = document.getElementById('wi-gre').value;
+        if (gre) params.gre_score = parseFloat(gre);
+        const cgpa = document.getElementById('wi-cgpa').value;
+        if (cgpa) params.cgpa = parseFloat(cgpa);
+        const pub = document.getElementById('wi-pub').value;
+        if (pub) params.add_publication = pub;
+        const countries = document.getElementById('wi-countries').value;
+        if (countries) params.target_countries = countries.split(',').map(s => s.trim()).filter(Boolean);
+
+        try {
+            const resp = await fetch(`/api/run/${currentRunId}/whatif`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params),
+            });
+            const data = await resp.json();
+            showWhatIfResults(data.matches);
+        } catch (err) {
+            console.error('What-If failed:', err);
+        }
+    }
+
+    function showWhatIfResults(matches) {
+        const div = document.getElementById('whatif-results');
+        if (!matches?.length) {
+            div.innerHTML = '<p class="text-gray-500 text-sm">No results to show.</p>';
+            return;
+        }
+
+        div.innerHTML = `
+            <div class="space-y-2">
+                ${matches.map((m, i) => `
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-navy-800/50">
+                        <span class="text-sm text-white">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || '—'}</span>
+                        <span class="font-bold ${m.fit_score >= 70 ? 'text-green-400' : m.fit_score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${m.fit_score}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // ─── Calendar ────────────────────────────────────────────────────────
+    function downloadCalendar() {
+        if (!currentRunId) return;
+        window.open(`/api/run/${currentRunId}/calendar.ics`);
+    }
+
+    // ─── Persona Switch ─────────────────────────────────────────────────
+    async function switchPersona() {
+        // Load persona B and run again
+        await loadDemo('persona_b');
+        await startRun();
+    }
+
+    // ─── Utilities ──────────────────────────────────────────────────────
+    function resetUI() {
+        eventCount = 0;
+        agentStates = {};
+        document.getElementById('event-count').textContent = '0 events';
+        document.getElementById('agent-panel').innerHTML = `
+            <div class="text-center text-gray-500 text-sm py-4">
+                <div class="loading-dots text-2xl">
+                    <span>.</span><span>.</span><span>.</span>
+                </div>
+                <p class="mt-2">Initializing agents...</p>
+            </div>
+        `;
+        document.getElementById('event-log').innerHTML = '';
+        document.getElementById('debate-strip').innerHTML = '';
+
+        // Hide result sections
+        ['debate-section', 'profile-section', 'results-section', 'map-section',
+         'whatif-section', 'roadmap-section', 'sop-section', 'table-section',
+         'diff-section'].forEach(id => {
+            document.getElementById(id).classList.add('section-hidden');
+        });
+    }
+
+    function updateRunButton(state) {
+        const btn = document.getElementById('run-btn');
+        if (state === 'running') {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Agents Working...';
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '🏮 Run MeritMap';
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+    }
+    </script>
+</body>
+</html>
