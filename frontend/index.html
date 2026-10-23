@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeritMap — Chart Your Way to Funded Education</title>
-    <meta name="description" content="AI-powered autonomous multi-agent scholarship finder. Ingests profiles, discovers, verifies with adversarial debate, and calculates True Cost in INR.">
+    <title>MeritMap — AI Autonomous Scholarship & Funded Education Finder</title>
+    <meta name="description" content="AI-powered autonomous multi-agent scholarship finder. Ingests student profiles, searches global opportunities, verifies via adversarial debate, and calculates True Cost in INR.">
     <link rel="icon" href="/assets/logo.png" type="image/png">
 
     <!-- Tailwind CDN -->
@@ -16,10 +16,10 @@
                 extend: {
                     colors: {
                         navy: {
-                            50: '#e8ecf4', 100: '#c5cde3', 200: '#9eabd0',
-                            300: '#7789bd', 400: '#5a70ae', 500: '#3d579f',
-                            600: '#2d4380', 700: '#1e3061', 800: '#0f1d42',
-                            900: '#0C1E41', 950: '#060f21',
+                            50: '#eef2fb', 100: '#d5def4', 200: '#b1c2eb',
+                            300: '#89a1df', 400: '#647fd1', 500: '#4662be',
+                            600: '#344b9b', 700: '#253775', 800: '#182451',
+                            850: '#111b3f', 900: '#0c1633', 950: '#070d1e',
                         },
                         amber: {
                             beacon: '#F5B53D',
@@ -34,30 +34,25 @@
                     animation: {
                         'beam-pulse': 'beamPulse 2s ease-in-out infinite',
                         'beam-glow': 'beamGlow 1.5s ease-in-out infinite',
-                        'fade-in': 'fadeIn 0.4s ease-out',
-                        'slide-up': 'slideUp 0.35s ease-out',
-                        'float': 'float 3s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
                     },
                     keyframes: {
                         beamPulse: {
                             '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
-                            '50%': { opacity: '1', transform: 'scale(1.04)' },
+                            '50%': { opacity: '1', transform: 'scale(1.02)' },
                         },
                         beamGlow: {
                             '0%, 100%': { boxShadow: '0 0 5px rgba(245,181,61,0.2)' },
-                            '50%': { boxShadow: '0 0 20px rgba(245,181,61,0.5), 0 0 40px rgba(245,181,61,0.2)' },
+                            '50%': { boxShadow: '0 0 22px rgba(245,181,61,0.45), 0 0 40px rgba(245,181,61,0.15)' },
                         },
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
                         },
                         slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(16px)' },
+                            '0%': { opacity: '0', transform: 'translateY(12px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-5px)' },
                         },
                     },
                 },
@@ -75,60 +70,66 @@
 
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f1d42; }
-        ::-webkit-scrollbar-thumb { background: #3d579f; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #070d1e; }
+        ::-webkit-scrollbar-thumb { background: #253775; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #F5B53D; }
 
-        .agent-working {
-            animation: beamGlow 1.5s ease-in-out infinite;
-            border-color: #F5B53D !important;
-            background: rgba(245, 181, 61, 0.08) !important;
+        .glass-surface {
+            background: linear-gradient(135deg, rgba(17, 27, 63, 0.72), rgba(12, 22, 51, 0.88));
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(100, 127, 209, 0.18);
         }
 
-        .fog-badge {
-            background: linear-gradient(135deg, rgba(245,181,61,0.18), rgba(212,160,58,0.08));
-            border: 1px solid rgba(245,181,61,0.35);
-            color: #F5B53D;
-        }
-
-        .verified-badge {
-            background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.08));
-            border: 1px solid rgba(34,197,94,0.35);
-            color: #22c55e;
-        }
-
-        .glass-card {
-            background: linear-gradient(135deg, rgba(15, 29, 66, 0.75), rgba(12, 30, 65, 0.9));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(61, 87, 159, 0.28);
-        }
-
-        .glass-card-hover:hover {
+        .glass-surface-hover:hover {
             border-color: rgba(245, 181, 61, 0.4);
             transform: translateY(-2px);
             transition: all 0.2s ease-in-out;
         }
 
+        .agent-working {
+            animation: beamGlow 1.5s ease-in-out infinite;
+            border-color: #F5B53D !important;
+            background: rgba(245, 181, 61, 0.1) !important;
+        }
+
+        .fog-badge {
+            background: rgba(245, 181, 61, 0.15);
+            border: 1px solid rgba(245, 181, 61, 0.35);
+            color: #F5B53D;
+        }
+
+        .verified-badge {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #4ade80;
+        }
+
         .score-bar {
             height: 6px;
             border-radius: 3px;
-            background: rgba(15, 29, 66, 0.8);
+            background: rgba(7, 13, 30, 0.7);
             overflow: hidden;
         }
         .score-bar-fill {
             height: 100%;
             border-radius: 3px;
-            transition: width 0.6s ease;
+            transition: width 0.5s ease;
         }
 
         #merit-map {
-            height: 420px;
-            border-radius: 12px;
+            height: 440px;
+            border-radius: 14px;
             overflow: hidden;
         }
 
         .debate-beacon { border-left: 3px solid #F5B53D; }
         .debate-skeptic { border-left: 3px solid #ef4444; }
+
+        .tab-btn.active {
+            background: rgba(245, 181, 61, 0.16);
+            color: #F5B53D;
+            border-color: rgba(245, 181, 61, 0.4);
+        }
 
         .section-hidden { display: none !important; }
 
@@ -143,570 +144,564 @@
         }
     </style>
 </head>
-<body class="bg-navy-950 text-gray-100 font-sans min-h-screen antialiased flex flex-col justify-between">
+<body class="bg-navy-950 text-gray-100 font-sans min-h-screen antialiased flex flex-col justify-between selection:bg-amber-beacon selection:text-navy-950">
 
-    <!-- ─── HEADER ─── -->
-    <header class="sticky top-0 z-40 glass-card border-b border-navy-700/50">
-        <div class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+    <!-- ─── TOP MINIMAL HEADER ─── -->
+    <header class="sticky top-0 z-40 glass-surface border-b border-navy-800/80">
+        <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="/assets/logo.png" alt="MeritMap Logo" class="w-10 h-10 animate-float object-contain">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="font-display font-bold text-xl text-white tracking-tight">MeritMap</h1>
-                        <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">Autonomous Multi-Agent</span>
+                <a href="/" class="flex items-center gap-2.5 group">
+                    <img src="/assets/logo.png" alt="MeritMap Logo" class="w-9 h-9 object-contain group-hover:scale-105 transition-transform">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-display font-bold text-lg text-white tracking-tight">MeritMap</h1>
+                            <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">AI Swarm</span>
+                        </div>
+                        <p class="text-[11px] text-gray-400 font-normal">Autonomous Scholarship Finder</p>
                     </div>
-                    <p class="text-xs text-amber-beacon/80 font-medium">Chart your way to funded education · TetraNoodle AI 2026</p>
-                </div>
+                </a>
             </div>
 
-            <!-- Ticker & Actions -->
-            <div class="flex items-center gap-3">
-                <!-- Currency quick ticker -->
-                <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-navy-900/80 border border-navy-700/70 text-xs">
-                    <span class="text-amber-beacon font-medium">FX to INR:</span>
-                    <span class="text-gray-300">1 USD = ₹84</span>
-                    <span class="text-gray-600">·</span>
-                    <span class="text-gray-300">1 EUR = ₹91</span>
-                    <span class="text-gray-600">·</span>
-                    <span class="text-gray-300">1 CAD = ₹61</span>
-                    <span class="text-gray-600">·</span>
-                    <span class="text-gray-300">1 SGD = ₹62</span>
+            <!-- Header Quick Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-navy-900/90 border border-navy-800 text-[11px] text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span>9 Agents Ready</span>
                 </div>
 
                 <button onclick="openReplayModal()"
-                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-amber-beacon/60 text-gray-300 hover:text-amber-beacon bg-navy-900/60 transition-all flex items-center gap-1.5">
-                    <span>↻</span> <span>Replay Runs</span>
+                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 hover:border-amber-beacon/60 text-gray-300 hover:text-amber-beacon bg-navy-900/60 transition-all flex items-center gap-1.5">
+                    <span>↻</span> <span class="hidden sm:inline">Saved Runs</span>
                 </button>
 
                 <a href="https://github.com/TusarGoswami/meritmap-Ai" target="_blank"
-                   class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 hover:border-white/50 text-gray-300 hover:text-white bg-navy-900/60 transition-colors flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                   class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 hover:border-white/50 text-gray-300 hover:text-white bg-navy-900/60 transition-colors flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     <span>GitHub</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- ─── MAIN APP CONTAINER ─── -->
-    <main class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1">
-        
-        <!-- 3-COLUMN RESPONSIVE LAYOUT -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <!-- ─── MAIN CONTENT ─── -->
+    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1 space-y-6">
 
-            <!-- ─── COLUMN 1: STUDENT PROFILE & INGESTION (lg:4, xl:3) ─── -->
-            <aside class="lg:col-span-4 xl:col-span-3 space-y-4">
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
+        <!-- ─── HERO & ONE-CLICK BENCHMARKS ─── -->
+        <section class="text-center max-w-3xl mx-auto space-y-3 pt-2">
+            <h2 class="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight leading-snug">
+                Chart your way to <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-beacon to-amber-glow">funded education</span>.
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
+                Upload your profile or select a test candidate below. MeritMap's 9 AI agents search, verify eligibility against official websites, and draft your application.
+            </p>
+
+            <!-- 1-Click Fast Track Demo Pills -->
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <span class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold mr-1">Quick Demos:</span>
+                <button type="button" onclick="loadBenchmarkRun('cli-rahul-shar', 'rahul')"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-beacon/15 hover:bg-amber-beacon text-amber-beacon hover:text-navy-950 border border-amber-beacon/40 transition-all shadow-sm flex items-center gap-1.5 group">
+                    <span>🇮🇳</span>
+                    <span>Rahul Sharma</span>
+                    <span class="text-[10px] opacity-75">(CS · 8.2 CGPA)</span>
+                    <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+                </button>
+                <button type="button" onclick="loadBenchmarkRun('cli-elena-rost', 'persona_b')"
+                        class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/40 transition-all shadow-sm flex items-center gap-1.5 group">
+                    <span>🌿</span>
+                    <span>Elena Rostova</span>
+                    <span class="text-[10px] opacity-75">(Enviro · 3.82 GPA)</span>
+                    <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ─── INPUT WORKSPACE (CLEAN & MINIMAL) ─── -->
+        <section id="input-container" class="max-w-3xl mx-auto">
+            <div class="glass-surface rounded-2xl p-5 sm:p-7 border border-navy-800 shadow-xl space-y-5">
+
+                <!-- Header inside card -->
+                <div class="flex items-center justify-between pb-3 border-b border-navy-800/80">
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-beacon text-base">📄</span>
+                        <h3 class="font-display font-semibold text-white text-sm sm:text-base">Student Profile & Documents</h3>
+                    </div>
+                    <button type="button" onclick="loadPresetAndFill('rahul')" class="text-[11px] text-amber-beacon hover:underline">
+                        Fill Rahul's Form Data
+                    </button>
+                </div>
+
+                <!-- Run Form -->
+                <form id="run-form" class="space-y-4" enctype="multipart/form-data">
                     
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
-                            <span class="text-amber-beacon">⚓</span> Student Navigator
-                        </h2>
-                        <span class="text-[11px] text-gray-400">Cartographer Ingest</span>
-                    </div>
+                    <!-- 1. Document Uploads Dropzones -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-3.5 rounded-xl border border-dashed border-navy-700 bg-navy-900/60 hover:border-amber-beacon/50 transition-colors">
+                            <label class="block text-xs font-medium text-gray-300 mb-1 flex items-center justify-between">
+                                <span>Resume (PDF)</span>
+                                <span class="text-[10px] text-gray-500" id="resume-filename">Optional</span>
+                            </label>
+                            <input type="file" id="resume" accept=".pdf" onchange="updateFileNameDisplay('resume', 'resume-filename')"
+                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-800 file:text-amber-beacon hover:file:bg-navy-700 file:cursor-pointer text-gray-400 cursor-pointer">
+                        </div>
 
-                    <!-- Instant Preset Selector -->
-                    <div class="mb-4 p-2.5 rounded-xl bg-navy-900/80 border border-navy-700/70">
-                        <label class="block text-[11px] font-semibold text-amber-beacon uppercase tracking-wider mb-2">⚡ Quick Benchmark Presets</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" onclick="loadPresetAndFill('rahul')"
-                                    class="text-xs px-2.5 py-2 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 hover:border-amber-beacon/50 text-left transition-all group">
-                                <span class="font-medium text-white block group-hover:text-amber-beacon">📋 Rahul Sharma</span>
-                                <span class="text-[10px] text-gray-400 block truncate">CS · 8.2 CGPA · India</span>
-                            </button>
-                            <button type="button" onclick="loadPresetAndFill('persona_b')"
-                                    class="text-xs px-2.5 py-2 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 hover:border-amber-beacon/50 text-left transition-all group">
-                                <span class="font-medium text-white block group-hover:text-amber-beacon">📋 Elena Rostova</span>
-                                <span class="text-[10px] text-gray-400 block truncate">Enviro · 3.82 GPA</span>
-                            </button>
+                        <div class="p-3.5 rounded-xl border border-dashed border-navy-700 bg-navy-900/60 hover:border-amber-beacon/50 transition-colors">
+                            <label class="block text-xs font-medium text-gray-300 mb-1 flex items-center justify-between">
+                                <span>Marksheet / Transcript (PDF)</span>
+                                <span class="text-[10px] text-gray-500" id="marksheet-filename">Optional</span>
+                            </label>
+                            <input type="file" id="marksheet" accept=".pdf" onchange="updateFileNameDisplay('marksheet', 'marksheet-filename')"
+                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-800 file:text-amber-beacon hover:file:bg-navy-700 file:cursor-pointer text-gray-400 cursor-pointer">
                         </div>
                     </div>
 
-                    <!-- Top Primary Action Button -->
-                    <button type="button" onclick="document.getElementById('run-form').requestSubmit()" id="top-run-btn"
-                            class="w-full py-2.5 mb-4 rounded-xl font-display font-semibold text-sm text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/30 transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2">
-                        <span>🏮</span> <span>Chart Education Route</span>
-                    </button>
-
-                    <!-- Ingestion Form -->
-                    <form id="run-form" class="space-y-3" enctype="multipart/form-data">
-                        
-                        <!-- PDF Documents -->
-                        <div class="space-y-2 pb-2 border-b border-navy-800">
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Resume (PDF)</label>
-                                <input type="file" id="resume" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer bg-navy-850 rounded-lg border border-navy-700 text-gray-300">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Marksheet / Transcript (PDF)</label>
-                                <input type="file" id="marksheet" accept=".pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-700 file:text-amber-beacon hover:file:bg-navy-600 file:cursor-pointer bg-navy-850 rounded-lg border border-navy-700 text-gray-300">
-                            </div>
-                        </div>
-
-                        <!-- Basic Info -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Name</label>
-                                <input type="text" id="name" placeholder="Rahul Sharma" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Nationality</label>
-                                <input type="text" id="nationality" placeholder="Indian" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                        </div>
-
+                    <!-- 2. Essential Profile Fields -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">GitHub Username</label>
-                            <input type="text" id="github_username" placeholder="rahul-cs-dev" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Full Name</label>
+                            <input type="text" id="name" placeholder="Rahul Sharma"
+                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
                         </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Degree</label>
-                                <input type="text" id="degree" placeholder="B.Tech" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Field</label>
-                                <input type="text" id="field_of_study" placeholder="Computer Science" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">CGPA / GPA</label>
-                                <input type="number" id="cgpa" step="0.01" placeholder="8.2" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Scale</label>
-                                <select id="cgpa_scale" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                                    <option value="10">10.0 (India / Global)</option>
-                                    <option value="4">4.0 (US / Canada)</option>
-                                    <option value="5">5.0 Scale</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Targets -->
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Countries</label>
-                            <input type="text" id="target_countries" placeholder="Canada, Germany, Singapore" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Nationality</label>
+                            <input type="text" id="nationality" placeholder="Indian"
+                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
                         </div>
+                    </div>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Degree</label>
-                                <select id="target_degree_level" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                                    <option value="Masters">Masters</option>
-                                    <option value="PhD">PhD</option>
-                                    <option value="Bachelors">Bachelors</option>
-                                    <option value="Postdoc">Postdoc</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[11px] font-medium text-gray-400 mb-1">Max Budget/yr ($)</label>
-                                <input type="number" id="budget" placeholder="5000" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
-                            </div>
-                        </div>
-
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Fields (comma-sep)</label>
-                            <input type="text" id="target_fields" placeholder="Computer Science, AI, Data Science" class="w-full px-2.5 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">CGPA / GPA</label>
+                            <input type="number" id="cgpa" step="0.01" placeholder="8.2"
+                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
                         </div>
-
-                        <div class="flex items-center justify-between pt-1">
-                            <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
-                                <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-700 text-amber-beacon focus:ring-amber-beacon">
-                                <span>Needs full funding</span>
-                            </label>
-
-                            <label class="flex items-center gap-1.5 text-xs cursor-pointer group">
-                                <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-700 text-red-500 focus:ring-red-500">
-                                <span class="text-gray-400 group-hover:text-red-400 transition-colors">🌊 Chaos Mode</span>
-                            </label>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Grading Scale</label>
+                            <select id="cgpa_scale" class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white focus:border-amber-beacon focus:outline-none transition-colors">
+                                <option value="10">10.0 (India / Global)</option>
+                                <option value="4">4.0 (US / Canada)</option>
+                                <option value="5">5.0 Scale</option>
+                            </select>
                         </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Degree</label>
+                            <select id="target_degree_level" class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white focus:border-amber-beacon focus:outline-none transition-colors">
+                                <option value="Masters">Masters</option>
+                                <option value="PhD">PhD</option>
+                                <option value="Bachelors">Bachelors</option>
+                                <option value="Postdoc">Postdoc</option>
+                            </select>
+                        </div>
+                    </div>
 
-                        <button type="submit" id="run-btn"
-                                class="w-full py-2.5 mt-2 rounded-xl font-display font-semibold text-sm text-navy-900 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-md shadow-amber-beacon/20">
-                            🏮 Run MeritMap
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Destinations (comma-separated)</label>
+                        <input type="text" id="target_countries" placeholder="Canada, Germany, Singapore"
+                               class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                    </div>
+
+                    <!-- 3. Collapsible Advanced Preferences (Keeps view minimal) -->
+                    <div class="border-t border-navy-800/80 pt-2">
+                        <button type="button" onclick="toggleAdvancedOptions()"
+                                class="text-xs text-gray-400 hover:text-amber-beacon flex items-center gap-1.5 py-1 transition-colors">
+                            <span id="adv-arrow">▸</span> <span>More Specifics (GitHub, Degree Field, Budget, Chaos Mode)</span>
                         </button>
-                    </form>
-                </div>
-            </aside>
 
-            <!-- ─── COLUMN 2: AUTONOMOUS AGENT HARBOR & REALTIME STREAM (lg:4, xl:4) ─── -->
-            <section class="lg:col-span-4 xl:col-span-4 space-y-4">
+                        <div id="advanced-options" class="section-hidden space-y-3 pt-3 animate-slide-up">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">GitHub Username</label>
+                                    <input type="text" id="github_username" placeholder="rahul-cs-dev"
+                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Current Degree</label>
+                                    <input type="text" id="degree" placeholder="B.Tech"
+                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Field of Study</label>
+                                    <input type="text" id="field_of_study" placeholder="Computer Science"
+                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Fields</label>
+                                    <input type="text" id="target_fields" placeholder="Computer Science, AI, Data Science"
+                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Max Yearly Budget ($ USD)</label>
+                                    <input type="number" id="budget" placeholder="5000"
+                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                </div>
+                                <div class="flex flex-col justify-end gap-2 pb-1">
+                                    <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+                                        <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-700 text-amber-beacon focus:ring-amber-beacon">
+                                        <span>Must be Fully Funded</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs text-gray-400 hover:text-red-400 cursor-pointer transition-colors">
+                                        <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-700 text-red-500 focus:ring-red-500">
+                                        <span>🌊 Chaos Mode (Test auto-recovery)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Big Primary Action Button -->
+                    <div class="pt-2">
+                        <button type="submit" id="run-btn"
+                                class="w-full py-3 rounded-xl font-display font-semibold text-sm sm:text-base text-navy-950 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/30 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                            <span>🏮</span> <span>Chart Education Route</span>
+                        </button>
+                    </div>
+
+                    <!-- Hidden secondary button kept for backwards-compat -->
+                    <button type="button" id="top-run-btn" class="hidden"></button>
+                </form>
+
+            </div>
+        </section>
+
+        <!-- ─── LIVE AGENT SWARM MONITOR (APPEARS DURING ACTIVE RUN) ─── -->
+        <section id="live-agent-tracker" class="max-w-4xl mx-auto space-y-4 section-hidden">
+            <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl space-y-4">
                 
-                <!-- Harbor Agents Grid -->
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
-                            <span class="text-amber-beacon">🏮</span> Harbor Agent Fleet
-                        </h2>
-                        <span class="text-[11px] px-2 py-0.5 rounded-full bg-navy-800 text-amber-beacon font-mono">9 Cooperating Agents</span>
+                <div class="flex items-center justify-between pb-2 border-b border-navy-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-beacon animate-ping"></span>
+                        <h3 class="font-display font-semibold text-sm sm:text-base text-white">Autonomous Agent Swarm Active</h3>
+                    </div>
+                    <span class="text-xs font-mono text-gray-400" id="event-count">0 events</span>
+                </div>
+
+                <!-- Sleek 9-Agent Horizontal Stepper -->
+                <div class="grid grid-cols-3 sm:grid-cols-9 gap-1.5" id="agent-pipeline-overview">
+                    <div id="pip-CartographerAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🗺️</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Cartographer</div>
+                    </div>
+                    <div id="pip-NavigatorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🧭</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Navigator</div>
+                    </div>
+                    <div id="pip-ScoutAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🔍</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Scout</div>
+                    </div>
+                    <div id="pip-SurveyorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">📐</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Surveyor</div>
+                    </div>
+                    <div id="pip-BeaconAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🏮</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Beacon</div>
+                    </div>
+                    <div id="pip-SkepticAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🔬</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Skeptic</div>
+                    </div>
+                    <div id="pip-PathfinderAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🛤️</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Pathfinder</div>
+                    </div>
+                    <div id="pip-ScribeAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">✍️</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Scribe</div>
+                    </div>
+                    <div id="pip-AuditorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                        <div class="text-xs">🔎</div>
+                        <div class="text-[10px] font-medium text-gray-300 truncate">Auditor</div>
+                    </div>
+                </div>
+
+                <!-- Latest Agent Status Banner -->
+                <div id="latest-status-banner" class="p-3 rounded-xl bg-navy-900/90 border border-navy-700/80 flex items-center gap-3">
+                    <span class="text-lg">🤖</span>
+                    <div class="flex-1 truncate">
+                        <span class="text-xs font-semibold text-amber-beacon" id="current-agent-label">Harbor Master</span>
+                        <p class="text-xs text-gray-300 truncate" id="current-agent-msg">Launching multi-agent pipeline...</p>
+                    </div>
+                </div>
+
+                <!-- Collapsible Inspection Drawers (Debates & Full Terminal Log) -->
+                <div class="pt-1">
+                    <div class="flex gap-2 border-b border-navy-800 pb-2">
+                        <button type="button" onclick="toggleFeedTab('logs')" id="feed-tab-logs" class="text-xs px-3 py-1 rounded-lg bg-navy-800 text-white font-medium">
+                            Live Terminal Log
+                        </button>
+                        <button type="button" onclick="toggleFeedTab('debates')" id="feed-tab-debates" class="text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors">
+                            ⚔️ Skeptic Debate Feed
+                        </button>
                     </div>
 
-                    <!-- 9-Agent Pipeline Visualizer -->
-                    <div class="grid grid-cols-3 gap-2 mb-4" id="agent-pipeline-overview">
-                        <div id="pip-CartographerAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🗺️ Cartographer</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Dual GPA / OCR</p>
-                        </div>
-                        <div id="pip-NavigatorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🧭 Navigator</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Search Planner</p>
-                        </div>
-                        <div id="pip-ScoutAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🔍 Scout</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Concurrent Finder</p>
-                        </div>
-                        <div id="pip-SurveyorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">📐 Surveyor</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Evidence Harvester</p>
-                        </div>
-                        <div id="pip-BeaconAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🏮 Beacon</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Fit & True Cost</p>
-                        </div>
-                        <div id="pip-SkepticAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🔬 Skeptic</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Adversarial Auditor</p>
-                        </div>
-                        <div id="pip-PathfinderAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🛤️ Pathfinder</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Roadmap & What-If</p>
-                        </div>
-                        <div id="pip-ScribeAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">✍️ Scribe</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Fact-Grounded SOP</p>
-                        </div>
-                        <div id="pip-AuditorAgent" class="p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all">
-                            <div class="flex items-center justify-between text-[11px] mb-0.5">
-                                <span class="font-medium text-white">🔎 Auditor</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 truncate">Quality Gatekeeper</p>
+                    <!-- Terminal Log -->
+                    <div id="feed-view-logs" class="pt-3">
+                        <div id="event-log" class="h-36 overflow-y-auto space-y-1 text-[11px] font-mono p-3 rounded-xl bg-navy-950/80 border border-navy-900">
+                            <p class="text-gray-500">System standby. Awaiting launch...</p>
                         </div>
                     </div>
 
-                    <!-- Dynamic Live Activity Cards -->
-                    <div id="agent-panel" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                        <div class="text-center text-gray-400 text-xs py-4 border border-dashed border-navy-700 rounded-xl bg-navy-900/40">
-                            <p class="text-xl mb-1">⚓</p>
-                            <p class="font-medium text-gray-300">Harbor Master Ready</p>
-                            <p class="text-[11px] text-gray-500 mt-0.5">Select a preset or click "Chart Education Route"</p>
+                    <!-- Debate Feed -->
+                    <div id="feed-view-debates" class="pt-3 section-hidden">
+                        <div id="debate-strip" class="h-36 overflow-y-auto space-y-2 text-xs p-3 rounded-xl bg-navy-950/80 border border-navy-900">
+                            <p class="text-gray-500 italic">No debate arguments recorded yet.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Beacon vs Skeptic Debate Arena -->
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="debate-section">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="font-display font-semibold text-sm text-white flex items-center gap-2">
-                            <span class="text-amber-beacon">⚔️</span> Beacon vs Skeptic Debate Arena
-                        </h2>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Adversarial Red-Team</span>
+                <!-- Dynamic Agent Cards Hidden Anchor for backward-compat -->
+                <div id="agent-panel" class="hidden"></div>
+                <div id="debate-section" class="hidden"></div>
+            </div>
+        </section>
+
+        <!-- ─── RESULTS WORKSPACE (CLEAN, TABBED & INTUITIVE) ─── -->
+        <section id="results-workspace" class="max-w-5xl mx-auto space-y-5 section-hidden">
+            
+            <!-- 1. Profile Summary Card -->
+            <div id="profile-section" class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl section-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-beacon/15 border border-amber-beacon/30 flex items-center justify-center text-xl">
+                            🎓
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-base text-white" id="summary-name">Student Profile</h3>
+                            <p class="text-xs text-gray-400" id="summary-subtitle">B.Tech Computer Science</p>
+                        </div>
                     </div>
-                    <div id="debate-strip" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+
+                    <div class="flex items-center gap-3 text-xs" id="summary-badges">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
 
-                <!-- Event Stream Terminal Log -->
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl">
+                <div id="profile-summary" class="hidden"></div>
+            </div>
+
+            <!-- 2. Modern Segmented Tab Navigation -->
+            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 border-b border-navy-800">
+                <div class="flex items-center gap-1.5 min-w-max">
+                    <button type="button" onclick="switchResultsTab('matches')" id="tab-matches"
+                            class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-1.5">
+                        <span>🏆</span> <span>Top Matches</span>
+                    </button>
+                    <button type="button" onclick="switchResultsTab('map')" id="tab-map"
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                        <span>🗺️</span> <span>World Map</span>
+                    </button>
+                    <button type="button" onclick="switchResultsTab('sop')" id="tab-sop"
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                        <span>📝</span> <span>SOP Draft</span>
+                    </button>
+                    <button type="button" onclick="switchResultsTab('roadmap')" id="tab-roadmap"
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                        <span>🗓️</span> <span>Roadmap & .ICS</span>
+                    </button>
+                    <button type="button" onclick="switchResultsTab('whatif')" id="tab-whatif"
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                        <span>🔮</span> <span>What-If Simulator</span>
+                    </button>
+                    <button type="button" onclick="switchResultsTab('table')" id="tab-table"
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                        <span>📋</span> <span>Evidence Ledger</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 1: TOP MATCHES -->
+            <div id="tab-content-matches" class="space-y-4">
+                <div id="results-section">
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-display font-semibold text-xs text-white flex items-center gap-1.5">
-                            <span class="text-amber-beacon">📜</span> Real-time Event Stream
-                        </h3>
-                        <span class="text-[10px] font-mono text-gray-500" id="event-count">0 events</span>
+                        <span class="text-xs text-gray-400" id="top-beacons-count">Top Matches</span>
+                        <span class="text-xs text-amber-beacon font-medium">True Cost calculated in Indian Rupee (₹)</span>
                     </div>
-                    <div id="event-log" class="h-44 overflow-y-auto space-y-1 text-[11px] font-mono p-2.5 rounded-xl bg-navy-950/70 border border-navy-800">
-                        <p class="text-gray-500">System standby. Awaiting mission launch...</p>
-                    </div>
+                    <div id="results-cards" class="space-y-3.5"></div>
                 </div>
-            </section>
+            </div>
 
-            <!-- ─── COLUMN 3: INTELLIGENCE CENTER & RESULTS (lg:4, xl:5) ─── -->
-            <section class="lg:col-span-4 xl:col-span-5 space-y-4">
+            <!-- TAB 2: WORLD MAP -->
+            <div id="tab-content-map" class="space-y-4 section-hidden">
+                <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl" id="map-section">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-display font-semibold text-base text-white">Geographic Opportunity Distribution</h3>
+                            <p class="text-xs text-gray-400">Plotted by institution location and scored by fit</p>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs">
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-400"></span> 70+ Fit</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-beacon"></span> 50-69</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> &lt;50</span>
+                        </div>
+                    </div>
+                    <div id="merit-map" class="border border-navy-800"></div>
+                </div>
+            </div>
 
-                <!-- 1. INITIAL STATE: FAST TRACK & BENCHMARK RADAR (No more blank space!) -->
-                <div id="welcome-briefing-card" class="glass-card rounded-2xl p-6 border border-navy-700/70 shadow-2xl">
+            <!-- TAB 3: STATEMENT OF PURPOSE STUDIO -->
+            <div id="tab-content-sop" class="space-y-4 section-hidden">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="sop-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                                <span>📝</span> <span>Fact-Grounded Statement of Purpose (SOP)</span>
+                            </h3>
+                            <p class="text-xs text-gray-400">Drafted strictly from candidate credentials with zero hallucinated honors</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 bg-navy-900/80 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1.5">
+                                <span>📋</span> <span>Copy SOP</span>
+                            </button>
+                            <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 bg-navy-900/80 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1.5">
+                                <span>💾</span> <span>Download .txt</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="sop-content" class="text-sm leading-relaxed text-gray-300"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: PATHFINDER ROADMAP & CALENDAR -->
+            <div id="tab-content-roadmap" class="space-y-4 section-hidden">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="roadmap-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                                <span>🗓️</span> <span>Pathfinder Gap-Closing Roadmap</span>
+                            </h3>
+                            <p class="text-xs text-gray-400">Chronological timeline of tests, documents, and application deadlines</p>
+                        </div>
+                        <button onclick="downloadCalendar()" class="text-xs px-3.5 py-1.5 rounded-lg border border-amber-beacon/40 bg-amber-beacon/15 text-amber-beacon hover:bg-amber-beacon hover:text-navy-950 transition-all flex items-center gap-1.5 font-medium">
+                            <span>📅</span> <span>Sync to Calendar (.ics)</span>
+                        </button>
+                    </div>
+                    <div id="roadmap-timeline" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- TAB 5: WHAT-IF SCENARIO SIMULATOR -->
+            <div id="tab-content-whatif" class="space-y-4 section-hidden">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="whatif-section">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                                <span>🔮</span> <span>What-If Scenario Simulator</span>
+                            </h3>
+                            <p class="text-xs text-gray-400">Instant pure-Python re-scoring with zero web-scraping latency</p>
+                        </div>
+                        <button onclick="runWhatIf()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-amber-beacon hover:bg-amber-glow text-navy-950 transition-all flex items-center gap-1.5 shadow-md">
+                            <span>⚡</span> <span>Recalculate Fit</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">IELTS Score</label>
+                            <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.5"
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">GRE Score</label>
+                            <input type="number" id="wi-gre" min="260" max="340" placeholder="325"
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">GPA (4.0 Scale)</label>
+                            <input type="number" id="wi-cgpa" step="0.05" min="0" max="4" placeholder="3.8"
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Add Publication</label>
+                            <input type="text" id="wi-pub" placeholder="IEEE / NeurIPS"
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Target Countries</label>
+                            <input type="text" id="wi-countries" placeholder="UK, Sweden"
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div id="whatif-results" class="mt-3"></div>
+                </div>
+            </div>
+
+            <!-- TAB 6: FULL DISCOVERED TABLE & EVIDENCE LEDGER -->
+            <div id="tab-content-table" class="space-y-4 section-hidden">
+                <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl" id="table-section">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h2 class="font-display font-bold text-lg text-white flex items-center gap-2">
-                                <span class="text-amber-beacon">⚡</span> Fast Track & Benchmark Radar
-                            </h2>
-                            <p class="text-xs text-gray-400 mt-0.5">Explore pre-computed, verified multi-agent education routes instantly</p>
-                        </div>
-                        <span class="text-[11px] px-2.5 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 font-medium">Verified Ready</span>
-                    </div>
-
-                    <!-- 2 Big Clickable Persona Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-                        
-                        <!-- Benchmark 1: Rahul Sharma -->
-                        <div class="p-4 rounded-xl bg-navy-850/90 border border-navy-700 hover:border-amber-beacon/60 transition-all flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <span>🇮🇳</span> <span>Rahul Sharma</span>
-                                    </span>
-                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-navy-700 text-amber-beacon">CS / India</span>
-                                </div>
-                                <div class="text-xs text-gray-300 space-y-1 mb-3">
-                                    <p>• <strong>Profile:</strong> B.Tech CS, 8.2/10.0 CGPA</p>
-                                    <p>• <strong>Targets:</strong> Canada, Germany, Singapore</p>
-                                    <p>• <strong>Funding:</strong> Financial Need (~₹0 Out-of-Pocket)</p>
-                                    <p class="text-[11px] text-green-400">★ <strong>DAAD Helmut Schmidt:</strong> 100/100 Fit</p>
-                                </div>
-                            </div>
-                            <button type="button" onclick="loadBenchmarkRun('cli-rahul-shar', 'rahul')"
-                                    class="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-amber-beacon/15 hover:bg-amber-beacon text-amber-beacon hover:text-navy-950 border border-amber-beacon/40 transition-all flex items-center justify-center gap-1.5">
-                                <span>⚡</span> <span>Inspect Rahul's Route</span>
-                            </button>
-                        </div>
-
-                        <!-- Benchmark 2: Elena Rostova -->
-                        <div class="p-4 rounded-xl bg-navy-850/90 border border-navy-700 hover:border-amber-beacon/60 transition-all flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-xs font-bold text-white flex items-center gap-1.5">
-                                        <span>🌿</span> <span>Elena Rostova</span>
-                                    </span>
-                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-navy-700 text-blue-400">Surprise B</span>
-                                </div>
-                                <div class="text-xs text-gray-300 space-y-1 mb-3">
-                                    <p>• <strong>Profile:</strong> B.Sc Environmental, 3.82/4.0 GPA</p>
-                                    <p>• <strong>Targets:</strong> Netherlands, Sweden, UK</p>
-                                    <p>• <strong>Funding:</strong> Full / Partial Merit Awards</p>
-                                    <p class="text-[11px] text-green-400">★ <strong>NL Scholarship:</strong> 93/100 Fit</p>
-                                </div>
-                            </div>
-                            <button type="button" onclick="loadBenchmarkRun('cli-elena-rost', 'persona_b')"
-                                    class="w-full py-2 px-3 rounded-lg text-xs font-semibold bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/40 transition-all flex items-center justify-center gap-1.5">
-                                <span>⚡</span> <span>Inspect Elena's Route</span>
-                            </button>
+                            <h3 class="font-display font-semibold text-base text-white">Full Evidence Ledger & Discovered Candidates</h3>
+                            <p class="text-xs text-gray-400">All 10+ discovered programs evaluated by Skeptic Red-Team</p>
                         </div>
                     </div>
-
-                    <!-- System Architecture Guarantees -->
-                    <div class="border-t border-navy-800 pt-4 space-y-2.5">
-                        <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Autonomous Architecture Highlights</h4>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
-                                <span class="text-amber-beacon font-medium block">🛡️ Skeptic Overturn Loop</span>
-                                <span class="text-[11px] text-gray-400">Cuts false-positives by 62.5% hunting expired deadlines & country clauses.</span>
-                            </div>
-                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
-                                <span class="text-amber-beacon font-medium block">💰 True Cost in INR</span>
-                                <span class="text-[11px] text-gray-400">Calculates tuition, living, visa, and flight to show real family deficit.</span>
-                            </div>
-                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
-                                <span class="text-amber-beacon font-medium block">📜 Evidence Ledger</span>
-                                <span class="text-[11px] text-gray-400">Every match carries verbatim quotes from verified university websites.</span>
-                            </div>
-                            <div class="p-2.5 rounded-lg bg-navy-900/60 border border-navy-800">
-                                <span class="text-amber-beacon font-medium block">⚖️ Dual Bavarian Scale</span>
-                                <span class="text-[11px] text-gray-400">Normalizes Indian 10.0 and US 4.0 scales to German Bavarian formula.</span>
-                            </div>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left" id="opportunities-table">
+                            <thead>
+                                <tr class="text-gray-400 border-b border-navy-800 pb-2">
+                                    <th class="pb-2.5 pr-3">#</th>
+                                    <th class="pb-2.5 pr-3">Program / Award</th>
+                                    <th class="pb-2.5 pr-3">Institution</th>
+                                    <th class="pb-2.5 pr-3">Country</th>
+                                    <th class="pb-2.5 pr-3">Fit</th>
+                                    <th class="pb-2.5 pr-3">True Cost (INR)</th>
+                                    <th class="pb-2.5 pr-3">Deadline</th>
+                                    <th class="pb-2.5">Skeptic Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
                     </div>
                 </div>
-
-                <!-- 2. Profile Summary Card (Shown when a run is active) -->
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="profile-section">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
-                            <span class="text-amber-beacon">🧭</span> Charted Profile Summary
-                        </h2>
-                        <button onclick="toggleBriefingView()" class="text-xs text-amber-beacon hover:underline">Toggle Briefing</button>
-                    </div>
-                    <div id="profile-summary"></div>
-                </div>
-
-                <!-- 3. Top Beacons Match Results (Shown when matches exist) -->
-                <div class="glass-card rounded-2xl p-5 border border-navy-700/60 shadow-xl section-hidden" id="results-section">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="font-display font-semibold text-base text-white flex items-center gap-2">
-                            <span class="text-amber-beacon">🏮</span> Top Verified Beacons
-                        </h2>
-                        <span class="text-xs text-gray-400" id="top-beacons-count">5 Top Matches</span>
-                    </div>
-                    <div id="results-cards" class="space-y-3 max-h-[640px] overflow-y-auto pr-1"></div>
-                </div>
-
-            </section>
-        </div>
-
-        <!-- ─── FULL-WIDTH SECTIONS BELOW THE FOLD ─── -->
-
-        <!-- Section: Interactive Merit Map (World Map) -->
-        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="map-section">
-            <div class="flex items-center justify-between mb-3">
-                <div>
-                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                        <span class="text-amber-beacon">🗺️</span> Interactive Merit Map
-                    </h2>
-                    <p class="text-xs text-gray-400">Geographic distribution of top ranked funded opportunities</p>
-                </div>
-                <div class="flex items-center gap-2 text-xs">
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> 70+ Fit</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-beacon"></span> 50-69 Fit</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500"></span> &lt;50 Fit</span>
-                </div>
             </div>
-            <div id="merit-map" class="border border-navy-700 rounded-xl"></div>
-        </div>
 
-        <!-- Section: Instant What-If Simulator -->
-        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="whatif-section">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                        <span class="text-amber-beacon">🔮</span> What-If Scenario Simulator
-                    </h2>
-                    <p class="text-xs text-gray-400">Instant pure-Python re-scoring with zero LLM latency</p>
-                </div>
-                <button onclick="runWhatIf()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-amber-beacon hover:bg-amber-glow text-navy-950 transition-all flex items-center gap-1.5">
-                    <span>⚡</span> <span>Recalculate Fit</span>
-                </button>
-            </div>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">IELTS Score</label>
-                    <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.5" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">GRE Score</label>
-                    <input type="number" id="wi-gre" min="260" max="340" placeholder="325" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">CGPA (4.0 Normalized)</label>
-                    <input type="number" id="wi-cgpa" step="0.05" min="0" max="4" placeholder="3.8" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Add Publication / Paper</label>
-                    <input type="text" id="wi-pub" placeholder="IEEE / NeurIPS Workshop" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">Add Target Countries</label>
-                    <input type="text" id="wi-countries" placeholder="UK, Sweden, Japan" class="w-full px-3 py-1.5 text-xs rounded-lg bg-navy-800 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
-                </div>
-            </div>
-            
-            <div id="whatif-results" class="mt-3"></div>
-        </div>
+        </section>
 
-        <!-- Section: Pathfinder Dated Roadmap -->
-        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="roadmap-section">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                        <span class="text-amber-beacon">🗓️</span> Pathfinder Gap-Closing Roadmap
-                    </h2>
-                    <p class="text-xs text-gray-400">Dated milestones, document preparation steps, and application deadlines</p>
-                </div>
-                <button onclick="downloadCalendar()" class="text-xs px-3.5 py-1.5 rounded-lg border border-amber-beacon/40 text-amber-beacon hover:bg-amber-beacon/15 transition-all flex items-center gap-1.5">
-                    <span>📅</span> <span>Sync to Calendar (.ics)</span>
-                </button>
-            </div>
-            <div id="roadmap-timeline" class="space-y-3"></div>
-        </div>
-
-        <!-- Section: SOP Studio -->
-        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="sop-section">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                        <span class="text-amber-beacon">📝</span> Grounded Statement of Purpose (SOP) Studio
-                    </h2>
-                    <p class="text-xs text-gray-400">Strictly grounded in candidate facts with no hallucinated publications or awards</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1">
-                        <span>📋</span> <span>Copy SOP</span>
-                    </button>
-                    <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-600 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1">
-                        <span>💾</span> <span>Download .txt</span>
-                    </button>
-                </div>
-            </div>
-            <div id="sop-content" class="text-sm leading-relaxed text-gray-300"></div>
-        </div>
-
-        <!-- Section: Full Opportunities Table -->
-        <div class="glass-card rounded-2xl p-6 mt-6 border border-navy-700/60 shadow-xl section-hidden" id="table-section">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="font-display font-semibold text-lg text-white flex items-center gap-2">
-                    <span class="text-amber-beacon">📊</span> All Discovered Opportunities & Evidence Ledger
-                </h2>
-                <span class="text-xs text-gray-400">Full Audit Log</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left" id="opportunities-table">
-                    <thead>
-                        <tr class="text-gray-400 border-b border-navy-700">
-                            <th class="pb-2.5 pr-3">#</th>
-                            <th class="pb-2.5 pr-3">Scholarship / Program</th>
-                            <th class="pb-2.5 pr-3">Institution</th>
-                            <th class="pb-2.5 pr-3">Country</th>
-                            <th class="pb-2.5 pr-3">Fit</th>
-                            <th class="pb-2.5 pr-3">True Cost / yr</th>
-                            <th class="pb-2.5 pr-3">Deadline</th>
-                            <th class="pb-2.5">Skeptic Verdict</th>
-                        </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
-            </div>
-        </div>
+        <!-- Hidden anchor for welcome briefing toggle if needed -->
+        <div id="welcome-briefing-card" class="hidden"></div>
 
     </main>
 
-    <!-- ─── REPLAY MODAL ─── -->
-    <div id="replay-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 section-hidden">
-        <div class="glass-card rounded-2xl p-6 max-w-xl w-full border border-navy-600 shadow-2xl animate-slide-up">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+    <!-- ─── REPLAY RUNS MODAL ─── -->
+    <div id="replay-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 section-hidden">
+        <div class="glass-surface rounded-2xl p-6 max-w-lg w-full border border-navy-700 shadow-2xl animate-slide-up">
+            <div class="flex items-center justify-between mb-3 pb-2 border-b border-navy-800">
+                <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
                     <span class="text-amber-beacon">↻</span> Saved Route Replay
                 </h3>
-                <button onclick="closeReplayModal()" class="text-gray-400 hover:text-white text-lg">✕</button>
+                <button onclick="closeReplayModal()" class="text-gray-400 hover:text-white text-base">✕</button>
             </div>
-            <p class="text-xs text-gray-300 mb-4">Select any completed pipeline run from disk to immediately load full results, world map, and SOP.</p>
+            <p class="text-xs text-gray-400 mb-4">Select any benchmark or previous run from disk to immediately inspect verified results:</p>
             <div id="runs-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
                 <p class="text-xs text-gray-500">Loading saved runs...</p>
             </div>
         </div>
     </div>
 
-    <!-- ─── FOOTER ─── -->
-    <footer class="border-t border-navy-800/80 py-5 bg-navy-950/80 mt-12">
-        <div class="max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500">
-            MeritMap — Autonomous Multi-Agent Scholarship and Postgraduate Finder · TetraNoodle AI Hackathon 2026
+    <!-- ─── MINIMAL FOOTER ─── -->
+    <footer class="border-t border-navy-900 py-4 bg-navy-950/80">
+        <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+            <span>MeritMap · TetraNoodle AI Hackathon 2026</span>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-400">FX Rates: 1 USD = ₹84 · 1 EUR = ₹91 · 1 CAD = ₹61 · 1 SGD = ₹62</span>
+            </div>
         </div>
     </footer>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- ─── APP SCRIPT ─── -->
+    <!-- ─── JAVASCRIPT CONTROLLER ─── -->
     <script>
     let currentRunId = null;
     let eventSource = null;
     let eventCount = 0;
-    let agentStates = {};
     let map = null;
     let markers = [];
     let lastRunResult = null;
@@ -732,6 +727,66 @@
         await startRun();
     });
 
+    function toggleAdvancedOptions() {
+        const el = document.getElementById('advanced-options');
+        const arrow = document.getElementById('adv-arrow');
+        const isHidden = el.classList.contains('section-hidden');
+        if (isHidden) {
+            el.classList.remove('section-hidden');
+            arrow.textContent = '▾';
+        } else {
+            el.classList.add('section-hidden');
+            arrow.textContent = '▸';
+        }
+    }
+
+    function updateFileNameDisplay(inputId, labelId) {
+        const fileInput = document.getElementById(inputId);
+        const label = document.getElementById(labelId);
+        if (fileInput.files.length > 0) {
+            label.textContent = `✓ ${fileInput.files[0].name}`;
+            label.className = 'text-[10px] text-green-400 font-medium truncate max-w-[120px]';
+        } else {
+            label.textContent = 'Optional';
+            label.className = 'text-[10px] text-gray-500';
+        }
+    }
+
+    function toggleFeedTab(tab) {
+        const isLogs = tab === 'logs';
+        document.getElementById('feed-tab-logs').className = isLogs 
+            ? 'text-xs px-3 py-1 rounded-lg bg-navy-800 text-white font-medium'
+            : 'text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors';
+        document.getElementById('feed-tab-debates').className = !isLogs 
+            ? 'text-xs px-3 py-1 rounded-lg bg-navy-800 text-amber-beacon font-medium'
+            : 'text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors';
+        
+        document.getElementById('feed-view-logs').classList.toggle('section-hidden', !isLogs);
+        document.getElementById('feed-view-debates').classList.toggle('section-hidden', isLogs);
+    }
+
+    function switchResultsTab(tabName) {
+        const tabs = ['matches', 'map', 'sop', 'roadmap', 'whatif', 'table'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            const content = document.getElementById(`tab-content-${t}`);
+            if (btn) {
+                if (t === tabName) {
+                    btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-1.5';
+                } else {
+                    btn.className = 'tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5';
+                }
+            }
+            if (content) {
+                content.classList.toggle('section-hidden', t !== tabName);
+            }
+        });
+
+        if (tabName === 'map' && map) {
+            setTimeout(() => { map.invalidateSize(); }, 200);
+        }
+    }
+
     async function loadPresetAndFill(persona) {
         try {
             const resp = await fetch(`/api/demo/${persona}`);
@@ -748,6 +803,9 @@
             document.getElementById('target_fields').value = (data.target_fields || []).join(', ');
             document.getElementById('budget').value = data.budget_max_yearly_usd || '';
             document.getElementById('needs_full_funding').checked = data.needs_full_funding || false;
+
+            // Scroll down smoothly to form
+            document.getElementById('input-container')?.scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
             console.error('Failed to load demo preset:', err);
         }
@@ -762,14 +820,22 @@
                 const data = await resp.json();
                 lastRunResult = data;
                 displayResults(data);
+                
                 // Highlight pipeline agents as done
                 Object.keys(AGENT_NAMES).forEach(agent => {
                     const pip = document.getElementById(`pip-${agent}`);
                     if (pip) {
-                        pip.className = 'p-2 rounded-xl border border-green-500/40 bg-green-500/10 transition-all';
+                        pip.className = 'p-2 rounded-xl border border-green-500/40 bg-green-500/10 text-center transition-all';
                     }
                 });
+
+                document.getElementById('live-agent-tracker')?.classList.remove('section-hidden');
+                document.getElementById('current-agent-label').textContent = 'Audit Complete';
+                document.getElementById('current-agent-msg').textContent = `Loaded verified run for ${data.profile?.name || runId}`;
                 addLog('done', 'HarborMaster', `Loaded pre-computed verified benchmark run for ${data.profile?.name || runId}`);
+
+                // Smooth scroll to results
+                document.getElementById('results-workspace')?.scrollIntoView({ behavior: 'smooth' });
             }
         } catch (err) {
             console.error('Failed to load benchmark run:', err);
@@ -808,13 +874,17 @@
         resetUI();
         updateRunButton('running');
 
+        // Reveal live agent swarm tracker & scroll to it
+        document.getElementById('live-agent-tracker').classList.remove('section-hidden');
+        document.getElementById('live-agent-tracker').scrollIntoView({ behavior: 'smooth' });
+
         try {
             const resp = await fetch('/api/run', { method: 'POST', body: formData });
             const data = await resp.json();
             currentRunId = data.run_id;
             connectSSE(currentRunId);
 
-            // Polling fallback to guarantee results display even if SSE disconnects
+            // Polling fallback
             const pollTimer = setInterval(async () => {
                 if (!currentRunId) {
                     clearInterval(pollTimer);
@@ -830,9 +900,7 @@
                             displayResults(data);
                         }
                     }
-                } catch (e) {
-                    // Ignore transient network errors during poll
-                }
+                } catch (e) {}
             }, 3000);
         } catch (err) {
             console.error('Failed to start run:', err);
@@ -866,7 +934,7 @@
         eventCount++;
         document.getElementById('event-count').textContent = `${eventCount} events`;
 
-        updateAgentCard(event);
+        updateAgentPipeline(event);
         addLog(event.type, event.agent, event.message);
 
         if (event.type === 'debate') {
@@ -879,62 +947,21 @@
         }
     }
 
-    function updateAgentCard(event) {
-        const panel = document.getElementById('agent-panel');
+    function updateAgentPipeline(event) {
         const agentId = event.agent.replace(/\s+/g, '-');
-
-        // Update pipeline tile if present
         const pip = document.getElementById(`pip-${agentId}`);
         if (pip) {
             if (event.type === 'start' || event.type === 'progress') {
-                pip.className = 'p-2 rounded-xl border border-amber-beacon bg-amber-beacon/15 animate-pulse transition-all';
+                pip.className = 'p-2 rounded-xl border border-amber-beacon bg-amber-beacon/20 text-center animate-pulse transition-all';
             } else if (event.type === 'done' || event.type === 'result') {
-                pip.className = 'p-2 rounded-xl border border-green-500/50 bg-green-500/10 transition-all';
+                pip.className = 'p-2 rounded-xl border border-green-500/50 bg-green-500/10 text-center transition-all';
             }
         }
 
-        let card = document.getElementById(`agent-${agentId}`);
-        if (!card) {
-            if (panel.querySelector('.text-center')) {
-                panel.innerHTML = '';
-            }
-            card = document.createElement('div');
-            card.id = `agent-${agentId}`;
-            card.className = 'rounded-xl p-2.5 border border-navy-700 bg-navy-850/80 transition-all text-xs';
-            card.innerHTML = `
-                <div class="flex items-center justify-between mb-1">
-                    <div class="flex items-center gap-1.5">
-                        <span>${AGENT_ICONS[event.agent] || '🤖'}</span>
-                        <span class="font-medium text-white">${AGENT_NAMES[event.agent] || event.agent}</span>
-                    </div>
-                    <span class="agent-status text-[10px] px-2 py-0.5 rounded-full bg-navy-700 text-gray-400">idle</span>
-                </div>
-                <p class="agent-message text-[11px] text-gray-400 truncate"></p>
-            `;
-            panel.appendChild(card);
-        }
-
-        const statusEl = card.querySelector('.agent-status');
-        const msgEl = card.querySelector('.agent-message');
-
-        let status = 'working', statusClass = 'bg-amber-beacon/20 text-amber-beacon';
-        if (event.type === 'result' || event.type === 'done') {
-            status = 'done';
-            statusClass = 'bg-green-500/20 text-green-400';
-            card.classList.remove('agent-working');
-        } else if (event.type === 'warning') {
-            status = 'warning';
-            statusClass = 'bg-yellow-500/20 text-yellow-400';
-        } else if (event.type === 'recovered') {
-            status = 'recovered';
-            statusClass = 'bg-blue-500/20 text-blue-400';
-        } else {
-            card.classList.add('agent-working');
-        }
-
-        statusEl.textContent = status;
-        statusEl.className = `agent-status text-[10px] px-2 py-0.5 rounded-full ${statusClass}`;
-        msgEl.textContent = event.message;
+        const lbl = document.getElementById('current-agent-label');
+        const msg = document.getElementById('current-agent-msg');
+        if (lbl) lbl.textContent = `${AGENT_ICONS[event.agent] || '🤖'} ${AGENT_NAMES[event.agent] || event.agent}`;
+        if (msg) msg.textContent = event.message;
     }
 
     function addLog(type, agent, message) {
@@ -954,19 +981,20 @@
         const entry = document.createElement('div');
         entry.className = `${colorMap[type] || 'text-gray-400'} py-0.5 leading-tight`;
         const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        entry.innerHTML = `<span class="text-gray-500">${time}</span> <span class="text-navy-300 font-semibold">[${agent}]</span> ${message}`;
+        entry.innerHTML = `<span class="text-gray-600">${time}</span> <span class="text-navy-300 font-semibold">[${agent}]</span> ${message}`;
         log.appendChild(entry);
         log.scrollTop = log.scrollHeight;
     }
 
     function showDebateMessage(event) {
-        const section = document.getElementById('debate-section');
-        section.classList.remove('section-hidden');
         const strip = document.getElementById('debate-strip');
-        const isBeacon = event.agent === 'BeaconAgent';
+        if (strip.querySelector('p.italic')) {
+            strip.innerHTML = '';
+        }
 
+        const isBeacon = event.agent === 'BeaconAgent';
         const msg = document.createElement('div');
-        msg.className = `p-2 rounded-lg text-xs ${isBeacon ? 'debate-beacon bg-amber-beacon/10' : 'debate-skeptic bg-red-500/10'}`;
+        msg.className = `p-2.5 rounded-xl text-xs ${isBeacon ? 'debate-beacon bg-amber-beacon/10' : 'debate-skeptic bg-red-500/10'}`;
         msg.innerHTML = `
             <span class="font-bold ${isBeacon ? 'text-amber-beacon' : 'text-red-400'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
             <span class="text-gray-200 ml-1">${event.message}</span>
@@ -988,7 +1016,7 @@
     }
 
     function displayResults(data) {
-        document.getElementById('welcome-briefing-card').classList.add('section-hidden');
+        document.getElementById('results-workspace').classList.remove('section-hidden');
 
         if (data.profile) {
             showProfileSummary(data.profile);
@@ -998,7 +1026,6 @@
             showTopMatches(data.top_matches);
             showMap(data.top_matches);
             showOpportunitiesTable(data.match_results || data.top_matches);
-            document.getElementById('whatif-section').classList.remove('section-hidden');
         }
 
         if (data.roadmap) {
@@ -1008,39 +1035,36 @@
         if (data.sop) {
             showSOP(data.sop);
         }
-    }
 
-    function toggleBriefingView() {
-        const briefing = document.getElementById('welcome-briefing-card');
-        briefing.classList.toggle('section-hidden');
+        // Switch to matches tab
+        switchResultsTab('matches');
     }
 
     function showProfileSummary(profile) {
         const section = document.getElementById('profile-section');
         section.classList.remove('section-hidden');
-        const div = document.getElementById('profile-summary');
 
-        div.innerHTML = `
-            <div class="space-y-2 text-xs">
-                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Student Name</span><span class="text-white font-semibold">${profile.name || 'Unknown'}</span></div>
-                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Degree & Field</span><span class="text-white">${profile.degree || '—'} in ${profile.field_of_study || '—'}</span></div>
-                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">CGPA (Reported)</span><span class="text-amber-beacon font-bold">${profile.cgpa || '—'} / ${profile.cgpa_scale || '10.0'}</span></div>
-                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Nationality</span><span class="text-white">${profile.nationality || '—'}</span></div>
-                <div class="flex justify-between py-1 border-b border-navy-800"><span class="text-gray-400">Target Countries</span><span class="text-white">${profile.target_countries?.join(', ') || 'Global'}</span></div>
-                ${profile.skills?.length ? `<div><span class="text-gray-400 block mb-1">Confirmed Skills</span><div class="flex flex-wrap gap-1">${profile.skills.slice(0, 8).map(s => `<span class="px-2 py-0.5 rounded-full bg-navy-800 text-[10px] text-gray-300 border border-navy-700">${s}</span>`).join('')}</div></div>` : ''}
-            </div>
+        document.getElementById('summary-name').textContent = profile.name || 'Candidate Profile';
+        document.getElementById('summary-subtitle').textContent = `${profile.degree || 'B.Tech'} in ${profile.field_of_study || 'Computer Science'} · ${profile.nationality || 'International'}`;
+
+        const badgesContainer = document.getElementById('summary-badges');
+        badgesContainer.innerHTML = `
+            <span class="px-2.5 py-1 rounded-full bg-navy-800 text-amber-beacon border border-navy-700 font-mono font-medium">
+                CGPA: ${profile.cgpa || '8.2'} / ${profile.cgpa_scale || '10'}
+            </span>
+            <span class="px-2.5 py-1 rounded-full bg-navy-800 text-gray-300 border border-navy-700">
+                🎯 ${profile.target_countries?.slice(0, 3).join(', ') || 'Global'}
+            </span>
         `;
     }
 
     function showTopMatches(matches) {
-        const section = document.getElementById('results-section');
-        section.classList.remove('section-hidden');
-        document.getElementById('top-beacons-count').textContent = `${matches.length} Top Matches`;
+        document.getElementById('top-beacons-count').textContent = `${matches.length} Top Verified Matches`;
 
         const container = document.getElementById('results-cards');
         container.innerHTML = matches.map((m, i) => {
             const opp = m.opportunity || {};
-            const name = opp.name?.value || opp.name || 'Unknown Opportunity';
+            const name = opp.name?.value || opp.name || 'Scholarship Opportunity';
             const inst = opp.institution?.value || opp.institution || '';
             const country = opp.country || '';
             const score = m.fit_score || 0;
@@ -1052,71 +1076,69 @@
                                 verdict === 'weakened' ? 'fog-badge' : 'verified-badge';
 
             return `
-                <div class="rounded-xl p-4 border border-navy-700 bg-navy-850/80 hover:border-amber-beacon/50 transition-all animate-slide-up" style="animation-delay: ${i * 0.05}s">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1 pr-2">
+                <div class="rounded-2xl p-5 border border-navy-800 bg-navy-900/70 hover:border-amber-beacon/50 transition-all shadow-md animate-slide-up" style="animation-delay: ${i * 0.05}s">
+                    <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                        <div class="flex-1 min-w-[240px]">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold text-amber-beacon">#${i + 1}</span>
-                                <h3 class="font-display font-semibold text-white text-sm leading-tight">${name}</h3>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">#${i + 1} Best Fit</span>
+                                <span class="text-[11px] text-gray-400">${inst} · <strong>${country}</strong></span>
                             </div>
-                            <p class="text-xs text-gray-400">${inst} · ${country}</p>
+                            <h4 class="font-display font-bold text-white text-base leading-snug">${name}</h4>
                         </div>
                         <div class="text-right">
-                            <div class="text-xl font-extrabold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
-                            <div class="text-[10px] text-gray-400">fit score</div>
+                            <div class="text-2xl font-black ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
+                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Fit Score</div>
                         </div>
                     </div>
 
                     <!-- Breakdown bars -->
-                    <div class="space-y-1 my-2.5 p-2 rounded-lg bg-navy-900/60 border border-navy-800 text-[11px]">
-                        ${renderScoreBar('Academic', breakdown.academic_fit, 25)}
-                        ${renderScoreBar('Field Match', breakdown.field_fit, 20)}
-                        ${renderScoreBar('Funding', breakdown.funding_fit, 20)}
-                        ${renderScoreBar('Eligibility', breakdown.eligibility_fit, 15)}
-                        ${renderScoreBar('Deadline', breakdown.deadline_feasibility, 10)}
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 my-3 p-3 rounded-xl bg-navy-950/70 border border-navy-800 text-[11px]">
+                        ${renderScorePill('Academic Fit', breakdown.academic_fit, 25)}
+                        ${renderScorePill('Field Match', breakdown.field_fit, 20)}
+                        ${renderScorePill('Funding Match', breakdown.funding_fit, 20)}
+                        ${renderScorePill('Eligibility', breakdown.eligibility_fit, 15)}
+                        ${renderScorePill('Deadline Feasibility', breakdown.deadline_feasibility, 10)}
                     </div>
 
-                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-2 leading-relaxed">${m.why_it_fits}</p>` : ''}
+                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-3 leading-relaxed">${m.why_it_fits}</p>` : ''}
 
                     <!-- True Cost Highlight in INR -->
-                    ${cost.out_of_pocket_yearly_inr != null ? `
-                        <div class="p-2.5 rounded-lg bg-navy-900/80 text-xs mb-2 flex items-center justify-between border border-navy-700/60">
-                            <span class="text-gray-400">Family Out-of-Pocket:</span>
+                    <div class="p-3 rounded-xl bg-navy-950/80 text-xs mb-3 flex flex-wrap items-center justify-between gap-2 border border-navy-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-400">Estimated Family Out-of-Pocket:</span>
                             <span class="font-bold ${cost.is_fully_funded ? 'text-green-400' : 'text-amber-beacon'}">
-                                ${cost.is_fully_funded ? '✨ Fully Funded (₹0 Out-of-Pocket)' : `~₹${Math.round(cost.out_of_pocket_yearly_inr).toLocaleString()}/yr`}
+                                ${cost.is_fully_funded ? '✨ Fully Funded (₹0 Deficit)' : `~₹${Math.round(cost.out_of_pocket_yearly_inr || 0).toLocaleString()}/yr`}
                             </span>
                         </div>
-                    ` : ''}
+                        <span class="text-[11px] text-gray-500">Converted at official FX rates</span>
+                    </div>
 
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-[10px] px-2 py-0.5 rounded-full ${verdictBadge}">Skeptic: ${verdict}</span>
-                        ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-xs text-amber-beacon hover:underline flex items-center gap-1">Source Website →</a>` : ''}
+                    <div class="flex items-center justify-between pt-1 text-xs">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] ${verdictBadge}">Skeptic Red-Team: ${verdict}</span>
+                        ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-amber-beacon hover:underline flex items-center gap-1 font-medium">Official Program Page →</a>` : ''}
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function renderScoreBar(label, value, max) {
-        const pct = max > 0 ? ((value || 0) / max * 100) : 0;
-        const color = pct >= 70 ? 'bg-green-400' : pct >= 40 ? 'bg-amber-beacon' : 'bg-red-400';
+    function renderScorePill(label, value, max) {
+        const val = value || 0;
+        const pct = max > 0 ? (val / max * 100) : 0;
+        const color = pct >= 70 ? 'text-green-400' : pct >= 40 ? 'text-amber-beacon' : 'text-red-400';
         return `
-            <div class="flex items-center gap-2">
-                <span class="text-gray-400 w-20 truncate">${label}</span>
-                <div class="score-bar flex-1"><div class="score-bar-fill ${color}" style="width: ${pct}%"></div></div>
-                <span class="text-gray-400 w-9 text-right font-mono">${value || 0}/${max}</span>
+            <div>
+                <span class="text-gray-500 text-[10px] block truncate">${label}</span>
+                <span class="font-bold ${color}">${val}</span><span class="text-gray-500 text-[10px]">/${max}</span>
             </div>
         `;
     }
 
     function showMap(matches) {
-        const section = document.getElementById('map-section');
-        section.classList.remove('section-hidden');
-
         if (!map) {
             map = L.map('merit-map').setView([45, 10], 2);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                attribution: '&copy; OpenStreetMap &copy; CARTO',
                 maxZoom: 18,
             }).addTo(map);
         }
@@ -1169,10 +1191,7 @@
     }
 
     function showOpportunitiesTable(matches) {
-        const section = document.getElementById('table-section');
-        section.classList.remove('section-hidden');
         const tbody = document.getElementById('table-body');
-
         tbody.innerHTML = matches.map((m, i) => {
             const opp = m.opportunity || {};
             const name = opp.name?.value || opp.name || '—';
@@ -1202,30 +1221,27 @@
     }
 
     function showRoadmap(roadmap) {
-        const section = document.getElementById('roadmap-section');
-        section.classList.remove('section-hidden');
         const container = document.getElementById('roadmap-timeline');
-
         container.innerHTML = (roadmap.tasks || []).map((task, i) => {
             const priorityBadge = task.priority === 'high' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
                                  task.priority === 'medium' ? 'bg-amber-beacon/20 text-amber-beacon border border-amber-beacon/30' :
-                                 'bg-navy-700 text-gray-400';
+                                 'bg-navy-800 text-gray-400';
 
             return `
                 <div class="flex gap-3 animate-slide-up" style="animation-delay: ${i * 0.04}s">
                     <div class="flex flex-col items-center">
-                        <div class="w-3 h-3 rounded-full bg-amber-beacon mt-1"></div>
-                        ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1 bg-navy-700"></div>' : ''}
+                        <div class="w-3 h-3 rounded-full bg-amber-beacon mt-1.5"></div>
+                        ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1 bg-navy-800"></div>' : ''}
                     </div>
                     <div class="flex-1 pb-3">
-                        <div class="rounded-xl p-3 border border-navy-700 bg-navy-850/80">
+                        <div class="rounded-xl p-3.5 border border-navy-800 bg-navy-900/70">
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="font-medium text-xs text-white">${task.title}</h4>
-                                ${task.due_date ? `<span class="text-[11px] text-amber-beacon font-mono">${task.due_date}</span>` : ''}
+                                <h4 class="font-medium text-xs sm:text-sm text-white">${task.title}</h4>
+                                ${task.due_date ? `<span class="text-xs text-amber-beacon font-mono font-medium">${task.due_date}</span>` : ''}
                             </div>
-                            <p class="text-xs text-gray-400 mb-2">${task.description}</p>
+                            <p class="text-xs text-gray-300 mb-2 leading-relaxed">${task.description}</p>
                             <div class="flex gap-2">
-                                <span class="text-[10px] px-2 py-0.5 rounded bg-navy-750 text-gray-400">${task.category}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-navy-800 text-gray-400">${task.category}</span>
                                 <span class="text-[10px] px-2 py-0.5 rounded ${priorityBadge}">${task.priority} priority</span>
                             </div>
                         </div>
@@ -1236,20 +1252,17 @@
     }
 
     function showSOP(sop) {
-        const section = document.getElementById('sop-section');
-        section.classList.remove('section-hidden');
         const div = document.getElementById('sop-content');
-
         div.innerHTML = `
-            <div class="mb-3 p-3 rounded-xl bg-navy-900/80 border border-navy-800">
+            <div class="mb-3 p-3 rounded-xl bg-navy-950/80 border border-navy-800 flex items-center justify-between">
                 <span class="text-xs text-gray-400">Target Opportunity: </span>
                 <span class="text-xs text-amber-beacon font-semibold">${sop.target_opportunity}</span>
             </div>
-            <div class="whitespace-pre-wrap text-xs leading-relaxed text-gray-200 p-4 rounded-xl bg-navy-900/60 border border-navy-800 font-mono">${sop.sop_text}</div>
+            <div class="whitespace-pre-wrap text-xs leading-relaxed text-gray-200 p-4 rounded-xl bg-navy-950/70 border border-navy-800 font-sans">${sop.sop_text}</div>
             ${sop.document_checklist?.length ? `
-                <div class="mt-4 p-3 rounded-xl border border-navy-800 bg-navy-900/40">
+                <div class="mt-4 p-3.5 rounded-xl border border-navy-800 bg-navy-950/50">
                     <h4 class="text-xs font-semibold text-white mb-2">📋 Verified Document Checklist</h4>
-                    <ul class="space-y-1">${sop.document_checklist.map(d => `<li class="text-xs text-gray-400 flex items-center gap-2"><span>☑</span>${d}</li>`).join('')}</ul>
+                    <ul class="space-y-1.5">${sop.document_checklist.map(d => `<li class="text-xs text-gray-300 flex items-center gap-2"><span class="text-green-400">☑</span>${d}</li>`).join('')}</ul>
                 </div>
             ` : ''}
         `;
@@ -1310,7 +1323,7 @@
         div.innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 ${matches.map((m, i) => `
-                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-navy-850 border border-navy-700 text-xs">
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-navy-900 border border-navy-800 text-xs">
                         <span class="text-white truncate pr-2">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || 'Opportunity'}</span>
                         <span class="font-bold px-2 py-0.5 rounded ${m.fit_score >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-amber-beacon/20 text-amber-beacon'}">${m.fit_score}</span>
                     </div>
@@ -1337,7 +1350,7 @@
             }
             listEl.innerHTML = data.runs.map(r => `
                 <div onclick="selectSavedRun('${r.run_id}')"
-                     class="p-3 rounded-xl bg-navy-850 hover:bg-navy-800 border border-navy-700 hover:border-amber-beacon/50 cursor-pointer flex items-center justify-between transition-all">
+                     class="p-3 rounded-xl bg-navy-900 hover:bg-navy-800 border border-navy-800 hover:border-amber-beacon/50 cursor-pointer flex items-center justify-between transition-all">
                     <div>
                         <span class="text-xs font-semibold text-white block">${r.profile_name || 'Anonymous Student'}</span>
                         <span class="text-[10px] font-mono text-gray-400">${r.run_id}</span>
@@ -1362,6 +1375,7 @@
             const data = await resp.json();
             displayResults(data);
             addLog('done', 'HarborMaster', `Replayed run ${runId} from disk.`);
+            document.getElementById('results-workspace')?.scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
             console.error('Failed to load selected run:', err);
         }
@@ -1377,35 +1391,29 @@
         Object.keys(AGENT_NAMES).forEach(agent => {
             const pip = document.getElementById(`pip-${agent}`);
             if (pip) {
-                pip.className = 'p-2 rounded-xl border border-navy-700 bg-navy-900/60 transition-all';
+                pip.className = 'p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all';
             }
         });
 
-        // Hide result sections
-        ['debate-section', 'profile-section', 'results-section', 'map-section',
-         'whatif-section', 'roadmap-section', 'sop-section', 'table-section'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.add('section-hidden');
-        });
+        // Hide result sections until ready
+        document.getElementById('results-workspace').classList.add('section-hidden');
     }
 
     function updateRunButton(state) {
         const btn = document.getElementById('run-btn');
-        const topBtn = document.getElementById('top-run-btn');
         const isRunning = state === 'running';
 
-        [btn, topBtn].forEach(b => {
-            if (!b) return;
-            b.disabled = isRunning;
-            b.innerHTML = isRunning
-                ? '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Charting Course...'
+        if (btn) {
+            btn.disabled = isRunning;
+            btn.innerHTML = isRunning
+                ? '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span> Discovering Scholarships...'
                 : '<span>🏮</span> <span>Chart Education Route</span>';
             if (isRunning) {
-                b.classList.add('opacity-70', 'cursor-not-allowed');
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
             } else {
-                b.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
             }
-        });
+        }
     }
     </script>
 </body>
