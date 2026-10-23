@@ -69,14 +69,14 @@ def unsubscribe(run_id: str, q: asyncio.Queue) -> None:
             pass
 
 
-async def event_stream(run_id: str) -> AsyncGenerator[str, None]:
+async def event_stream(run_id: str) -> AsyncGenerator[dict[str, Any], None]:
     """
-    Async generator yielding SSE-formatted event strings.
+    Async generator yielding SSE event dictionaries for EventSourceResponse.
     Yields all historical events first, then live events.
     """
     # Replay history
     for event in _history.get(run_id, []):
-        yield f"data: {event.model_dump_json()}\n\n"
+        yield {"data": event.model_dump_json()}
 
     # Subscribe to live events
     q = subscribe(run_id)
@@ -84,12 +84,12 @@ async def event_stream(run_id: str) -> AsyncGenerator[str, None]:
         while True:
             try:
                 event = await asyncio.wait_for(q.get(), timeout=30.0)
-                yield f"data: {event.model_dump_json()}\n\n"
+                yield {"data": event.model_dump_json()}
                 if event.type == EventType.DONE:
                     break
             except asyncio.TimeoutError:
                 # Send keepalive
-                yield f": keepalive\n\n"
+                yield {"comment": "keepalive"}
     finally:
         unsubscribe(run_id, q)
 

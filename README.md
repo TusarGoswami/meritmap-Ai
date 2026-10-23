@@ -11,6 +11,20 @@
   <i>Built for the TetraNoodle AI Hackathon 2026</i>
 </p>
 
+<p align="center">
+  <a href="https://github.com/TusarGoswami/meritmap-Ai"><img src="https://img.shields.io/badge/GitHub-TusarGoswami%2Fmeritmap--Ai-181717?logo=github&logoColor=white" alt="GitHub Repo" /></a>
+</p>
+
+> **🔗 GitHub Repository:** [https://github.com/TusarGoswami/meritmap-Ai](https://github.com/TusarGoswami/meritmap-Ai)
+
+---
+
+## 🗺️ Agent Architecture Diagram
+
+<p align="center">
+  <img src="docs/agent_architecture_diagram.png" alt="MeritMap Agent Architecture Diagram" width="700" />
+</p>
+
 ---
 
 ## 🌟 What Makes MeritMap Different

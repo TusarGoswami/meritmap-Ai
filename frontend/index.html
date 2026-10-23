@@ -813,6 +813,27 @@
             const data = await resp.json();
             currentRunId = data.run_id;
             connectSSE(currentRunId);
+
+            // Polling fallback to guarantee results display even if SSE disconnects
+            const pollTimer = setInterval(async () => {
+                if (!currentRunId) {
+                    clearInterval(pollTimer);
+                    return;
+                }
+                try {
+                    const checkResp = await fetch(`/api/run/${currentRunId}/result`);
+                    if (checkResp.ok) {
+                        const data = await checkResp.json();
+                        if (data.status === 'completed' || (data.top_matches && data.top_matches.length > 0)) {
+                            clearInterval(pollTimer);
+                            updateRunButton('idle');
+                            displayResults(data);
+                        }
+                    }
+                } catch (e) {
+                    // Ignore transient network errors during poll
+                }
+            }, 3000);
         } catch (err) {
             console.error('Failed to start run:', err);
             updateRunButton('idle');
@@ -825,10 +846,14 @@
 
         eventSource.onmessage = (e) => {
             try {
-                const event = JSON.parse(e.data);
+                let raw = e.data;
+                if (typeof raw === 'string' && raw.startsWith('data:')) {
+                    raw = raw.replace(/^data:\s*/, '');
+                }
+                const event = JSON.parse(raw);
                 handleEvent(event);
             } catch (err) {
-                console.error('Failed to parse event:', err);
+                console.error('Failed to parse event:', err, e.data);
             }
         };
 
@@ -848,7 +873,7 @@
             showDebateMessage(event);
         }
 
-        if (event.type === 'done' && event.agent === 'HarborMaster') {
+        if (event.type === 'done' || (event.agent === 'HarborMaster' && event.type === 'done')) {
             updateRunButton('idle');
             fetchAndDisplayResults();
         }
