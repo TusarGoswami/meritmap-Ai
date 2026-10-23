@@ -69,21 +69,98 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
+        /* ─── DUAL THEME SYSTEM ─── */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-header: rgba(255, 255, 255, 0.92);
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --bg-input: #ffffff;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --border-main: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --accent: #d97706;
+            --accent-glow: rgba(217, 119, 6, 0.15);
+            --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+            --scrollbar-bg: #f1f5f9;
+            --scrollbar-thumb: #cbd5e1;
+        }
+
+        html.dark {
+            --bg-body: #070d1e;
+            --bg-header: rgba(12, 22, 51, 0.92);
+            --bg-card: #0c1633;
+            --bg-card-subtle: #111b3f;
+            --bg-input: #070d1e;
+            --text-heading: #ffffff;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-main: #182451;
+            --border-hover: #253775;
+            --accent: #F5B53D;
+            --accent-glow: rgba(245, 181, 61, 0.25);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+            --scrollbar-bg: #070d1e;
+            --scrollbar-thumb: #253775;
+        }
+
+        /* Essential Body Reset for Guaranteed Theme application */
+        body {
+            background-color: var(--bg-body) !important;
+            color: var(--text-body);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #070d1e; }
-        ::-webkit-scrollbar-thumb { background: #253775; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #F5B53D; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         .glass-surface {
-            background: linear-gradient(135deg, rgba(17, 27, 63, 0.72), rgba(12, 22, 51, 0.88));
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(100, 127, 209, 0.18);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-main);
+            box-shadow: var(--card-shadow);
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
         .glass-surface-hover:hover {
-            border-color: rgba(245, 181, 61, 0.4);
+            border-color: var(--accent);
             transform: translateY(-2px);
             transition: all 0.2s ease-in-out;
+        }
+
+        .theme-subtle-bg {
+            background-color: var(--bg-card-subtle);
+            border: 1px solid var(--border-main);
+        }
+
+        .theme-input {
+            background-color: var(--bg-input) !important;
+            color: var(--text-heading) !important;
+            border: 1px solid var(--border-main) !important;
+            transition: border-color 0.2s ease, background-color 0.25s ease;
+        }
+        .theme-input:focus {
+            border-color: var(--accent) !important;
+            outline: none;
+        }
+        .theme-input option {
+            background-color: var(--bg-card);
+            color: var(--text-heading);
+        }
+
+        .theme-title {
+            color: var(--text-heading) !important;
+        }
+
+        .theme-desc {
+            color: var(--text-body) !important;
+        }
+
+        .theme-muted-text {
+            color: var(--text-muted) !important;
         }
 
         .agent-working {
@@ -95,19 +172,25 @@
         .fog-badge {
             background: rgba(245, 181, 61, 0.15);
             border: 1px solid rgba(245, 181, 61, 0.35);
+            color: #d97706;
+        }
+        html.dark .fog-badge {
             color: #F5B53D;
         }
 
         .verified-badge {
             background: rgba(34, 197, 94, 0.15);
             border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #16a34a;
+        }
+        html.dark .verified-badge {
             color: #4ade80;
         }
 
         .score-bar {
             height: 6px;
             border-radius: 3px;
-            background: rgba(7, 13, 30, 0.7);
+            background: var(--border-main);
             overflow: hidden;
         }
         .score-bar-fill {
@@ -126,9 +209,9 @@
         .debate-skeptic { border-left: 3px solid #ef4444; }
 
         .tab-btn.active {
-            background: rgba(245, 181, 61, 0.16);
-            color: #F5B53D;
-            border-color: rgba(245, 181, 61, 0.4);
+            background: var(--accent-glow) !important;
+            color: var(--accent) !important;
+            border-color: var(--accent) !important;
         }
 
         .section-hidden { display: none !important; }
@@ -144,38 +227,52 @@
         }
     </style>
 </head>
-<body class="bg-navy-950 text-gray-100 font-sans min-h-screen antialiased flex flex-col justify-between selection:bg-amber-beacon selection:text-navy-950">
+<body class="font-sans min-h-screen antialiased flex flex-col justify-between selection:bg-amber-beacon selection:text-navy-950">
 
-    <!-- ─── TOP MINIMAL HEADER ─── -->
-    <header class="sticky top-0 z-40 glass-surface border-b border-navy-800/80">
+    <!-- ─── TOP HEADER ─── -->
+    <header class="sticky top-0 z-40 backdrop-blur-md border-b transition-colors"
+            style="background-color: var(--bg-header); border-color: var(--border-main);">
         <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="/" class="flex items-center gap-2.5 group">
                     <img src="/assets/logo.png" alt="MeritMap Logo" class="w-9 h-9 object-contain group-hover:scale-105 transition-transform">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="font-display font-bold text-lg text-white tracking-tight">MeritMap</h1>
-                            <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">AI Swarm</span>
+                            <h1 class="font-display font-bold text-lg theme-title tracking-tight">MeritMap</h1>
+                            <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-beacon border border-amber-500/30">AI Swarm</span>
                         </div>
-                        <p class="text-[11px] text-gray-400 font-normal">Autonomous Scholarship Finder</p>
+                        <p class="text-[11px] theme-muted-text font-normal">Autonomous Scholarship Finder</p>
                     </div>
                 </a>
             </div>
 
             <!-- Header Quick Actions -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-navy-900/90 border border-navy-800 text-[11px] text-gray-400">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                
+                <!-- Dark / Light Mode Toggle Button -->
+                <button type="button" onclick="toggleTheme()" id="theme-btn"
+                        class="px-2.5 py-1.5 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm"
+                        style="background-color: var(--bg-card); border-color: var(--border-main); color: var(--text-heading);"
+                        title="Toggle Light / Dark Mode">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-text" class="hidden sm:inline">Light</span>
+                </button>
+
+                <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border text-[11px]"
+                     style="background-color: var(--bg-card); border-color: var(--border-main); color: var(--text-muted);">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     <span>9 Agents Ready</span>
                 </div>
 
                 <button onclick="openReplayModal()"
-                        class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 hover:border-amber-beacon/60 text-gray-300 hover:text-amber-beacon bg-navy-900/60 transition-all flex items-center gap-1.5">
+                        class="text-xs px-3 py-1.5 rounded-xl border transition-all flex items-center gap-1.5"
+                        style="background-color: var(--bg-card); border-color: var(--border-main); color: var(--text-body);">
                     <span>↻</span> <span class="hidden sm:inline">Saved Runs</span>
                 </button>
 
                 <a href="https://github.com/TusarGoswami/meritmap-Ai" target="_blank"
-                   class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 hover:border-white/50 text-gray-300 hover:text-white bg-navy-900/60 transition-colors flex items-center gap-1.5">
+                   class="text-xs px-3 py-1.5 rounded-xl border transition-colors flex items-center gap-1.5"
+                   style="background-color: var(--bg-card); border-color: var(--border-main); color: var(--text-body);">
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     <span>GitHub</span>
                 </a>
@@ -188,28 +285,28 @@
 
         <!-- ─── HERO & ONE-CLICK BENCHMARKS ─── -->
         <section class="text-center max-w-3xl mx-auto space-y-3 pt-2">
-            <h2 class="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight leading-snug">
-                Chart your way to <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-beacon to-amber-glow">funded education</span>.
+            <h2 class="font-display font-bold text-2xl sm:text-3xl theme-title tracking-tight leading-snug">
+                Chart your way to <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-beacon dark:to-amber-glow">funded education</span>.
             </h2>
-            <p class="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
+            <p class="text-xs sm:text-sm theme-desc max-w-xl mx-auto leading-relaxed">
                 Upload your profile or select a test candidate below. MeritMap's 9 AI agents search, verify eligibility against official websites, and draft your application.
             </p>
 
             <!-- 1-Click Fast Track Demo Pills -->
             <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-                <span class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold mr-1">Quick Demos:</span>
+                <span class="text-[11px] theme-muted-text uppercase tracking-wider font-semibold mr-1">Quick Demos:</span>
                 <button type="button" onclick="loadBenchmarkRun('cli-rahul-shar', 'rahul')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-beacon/15 hover:bg-amber-beacon text-amber-beacon hover:text-navy-950 border border-amber-beacon/40 transition-all shadow-sm flex items-center gap-1.5 group">
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 dark:bg-amber-beacon/15 dark:hover:bg-amber-beacon text-amber-700 dark:text-amber-beacon dark:hover:text-navy-950 border border-amber-500/40 dark:border-amber-beacon/40 transition-all shadow-sm flex items-center gap-1.5 group">
                     <span>🇮🇳</span>
                     <span>Rahul Sharma</span>
-                    <span class="text-[10px] opacity-75">(CS · 8.2 CGPA)</span>
+                    <span class="text-[10px] opacity-80">(CS · 8.2 CGPA)</span>
                     <span class="group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
                 <button type="button" onclick="loadBenchmarkRun('cli-elena-rost', 'persona_b')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-blue-500/15 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/40 transition-all shadow-sm flex items-center gap-1.5 group">
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-500/15 hover:bg-blue-500 text-blue-700 dark:text-blue-400 hover:text-white dark:hover:text-white border border-blue-500/40 transition-all shadow-sm flex items-center gap-1.5 group">
                     <span>🌿</span>
                     <span>Elena Rostova</span>
-                    <span class="text-[10px] opacity-75">(Enviro · 3.82 GPA)</span>
+                    <span class="text-[10px] opacity-80">(Enviro · 3.82 GPA)</span>
                     <span class="group-hover:translate-x-0.5 transition-transform">→</span>
                 </button>
             </div>
@@ -217,15 +314,15 @@
 
         <!-- ─── INPUT WORKSPACE (CLEAN & MINIMAL) ─── -->
         <section id="input-container" class="max-w-3xl mx-auto">
-            <div class="glass-surface rounded-2xl p-5 sm:p-7 border border-navy-800 shadow-xl space-y-5">
+            <div class="glass-surface rounded-2xl p-5 sm:p-7 space-y-5">
 
                 <!-- Header inside card -->
-                <div class="flex items-center justify-between pb-3 border-b border-navy-800/80">
+                <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--border-main);">
                     <div class="flex items-center gap-2">
-                        <span class="text-amber-beacon text-base">📄</span>
-                        <h3 class="font-display font-semibold text-white text-sm sm:text-base">Student Profile & Documents</h3>
+                        <span class="text-amber-500 dark:text-amber-beacon text-base">📄</span>
+                        <h3 class="font-display font-semibold theme-title text-sm sm:text-base">Student Profile & Documents</h3>
                     </div>
-                    <button type="button" onclick="loadPresetAndFill('rahul')" class="text-[11px] text-amber-beacon hover:underline">
+                    <button type="button" onclick="loadPresetAndFill('rahul')" class="text-[11px] font-medium text-amber-600 dark:text-amber-beacon hover:underline">
                         Fill Rahul's Form Data
                     </button>
                 </div>
@@ -235,56 +332,56 @@
                     
                     <!-- 1. Document Uploads Dropzones -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="p-3.5 rounded-xl border border-dashed border-navy-700 bg-navy-900/60 hover:border-amber-beacon/50 transition-colors">
-                            <label class="block text-xs font-medium text-gray-300 mb-1 flex items-center justify-between">
+                        <div class="p-3.5 rounded-xl border border-dashed theme-subtle-bg transition-colors" style="border-color: var(--border-main);">
+                            <label class="block text-xs font-medium theme-title mb-1 flex items-center justify-between">
                                 <span>Resume (PDF)</span>
-                                <span class="text-[10px] text-gray-500" id="resume-filename">Optional</span>
+                                <span class="text-[10px] theme-muted-text" id="resume-filename">Optional</span>
                             </label>
                             <input type="file" id="resume" accept=".pdf" onchange="updateFileNameDisplay('resume', 'resume-filename')"
-                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-800 file:text-amber-beacon hover:file:bg-navy-700 file:cursor-pointer text-gray-400 cursor-pointer">
+                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-gray-200 dark:file:bg-navy-800 file:text-amber-700 dark:file:text-amber-beacon hover:file:opacity-80 file:cursor-pointer theme-muted-text cursor-pointer">
                         </div>
 
-                        <div class="p-3.5 rounded-xl border border-dashed border-navy-700 bg-navy-900/60 hover:border-amber-beacon/50 transition-colors">
-                            <label class="block text-xs font-medium text-gray-300 mb-1 flex items-center justify-between">
+                        <div class="p-3.5 rounded-xl border border-dashed theme-subtle-bg transition-colors" style="border-color: var(--border-main);">
+                            <label class="block text-xs font-medium theme-title mb-1 flex items-center justify-between">
                                 <span>Marksheet / Transcript (PDF)</span>
-                                <span class="text-[10px] text-gray-500" id="marksheet-filename">Optional</span>
+                                <span class="text-[10px] theme-muted-text" id="marksheet-filename">Optional</span>
                             </label>
                             <input type="file" id="marksheet" accept=".pdf" onchange="updateFileNameDisplay('marksheet', 'marksheet-filename')"
-                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-navy-800 file:text-amber-beacon hover:file:bg-navy-700 file:cursor-pointer text-gray-400 cursor-pointer">
+                                   class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:bg-gray-200 dark:file:bg-navy-800 file:text-amber-700 dark:file:text-amber-beacon hover:file:opacity-80 file:cursor-pointer theme-muted-text cursor-pointer">
                         </div>
                     </div>
 
                     <!-- 2. Essential Profile Fields -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Full Name</label>
+                            <label class="block text-[11px] font-medium theme-muted-text mb-1">Full Name</label>
                             <input type="text" id="name" placeholder="Rahul Sharma"
-                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                   class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Nationality</label>
+                            <label class="block text-[11px] font-medium theme-muted-text mb-1">Nationality</label>
                             <input type="text" id="nationality" placeholder="Indian"
-                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                   class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">CGPA / GPA</label>
+                            <label class="block text-[11px] font-medium theme-muted-text mb-1">CGPA / GPA</label>
                             <input type="number" id="cgpa" step="0.01" placeholder="8.2"
-                                   class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                                   class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Grading Scale</label>
-                            <select id="cgpa_scale" class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white focus:border-amber-beacon focus:outline-none transition-colors">
-                                <option value="10">10.0 (India / Global)</option>
-                                <option value="4">4.0 (US / Canada)</option>
+                            <label class="block text-[11px] font-medium theme-muted-text mb-1">Grading Scale</label>
+                            <select id="cgpa_scale" class="w-full px-3 py-2 text-xs rounded-xl theme-input">
+                                <option value="10">10.0 Scale (India / Global)</option>
+                                <option value="4">4.0 Scale (US / Canada)</option>
                                 <option value="5">5.0 Scale</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Degree</label>
-                            <select id="target_degree_level" class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white focus:border-amber-beacon focus:outline-none transition-colors">
+                            <label class="block text-[11px] font-medium theme-muted-text mb-1">Target Degree</label>
+                            <select id="target_degree_level" class="w-full px-3 py-2 text-xs rounded-xl theme-input">
                                 <option value="Masters">Masters</option>
                                 <option value="PhD">PhD</option>
                                 <option value="Bachelors">Bachelors</option>
@@ -294,58 +391,58 @@
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Destinations (comma-separated)</label>
+                        <label class="block text-[11px] font-medium theme-muted-text mb-1">Target Destinations (comma-separated)</label>
                         <input type="text" id="target_countries" placeholder="Canada, Germany, Singapore"
-                               class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none transition-colors">
+                               class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                     </div>
 
                     <!-- 3. Collapsible Advanced Preferences (Keeps view minimal) -->
-                    <div class="border-t border-navy-800/80 pt-2">
+                    <div class="border-t pt-2" style="border-color: var(--border-main);">
                         <button type="button" onclick="toggleAdvancedOptions()"
-                                class="text-xs text-gray-400 hover:text-amber-beacon flex items-center gap-1.5 py-1 transition-colors">
+                                class="text-xs theme-muted-text hover:text-amber-600 dark:hover:text-amber-beacon flex items-center gap-1.5 py-1 transition-colors">
                             <span id="adv-arrow">▸</span> <span>More Specifics (GitHub, Degree Field, Budget, Chaos Mode)</span>
                         </button>
 
                         <div id="advanced-options" class="section-hidden space-y-3 pt-3 animate-slide-up">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">GitHub Username</label>
+                                    <label class="block text-[11px] font-medium theme-muted-text mb-1">GitHub Username</label>
                                     <input type="text" id="github_username" placeholder="rahul-cs-dev"
-                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                           class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Current Degree</label>
+                                    <label class="block text-[11px] font-medium theme-muted-text mb-1">Current Degree</label>
                                     <input type="text" id="degree" placeholder="B.Tech"
-                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                           class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Field of Study</label>
+                                    <label class="block text-[11px] font-medium theme-muted-text mb-1">Field of Study</label>
                                     <input type="text" id="field_of_study" placeholder="Computer Science"
-                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                           class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Target Fields</label>
+                                    <label class="block text-[11px] font-medium theme-muted-text mb-1">Target Fields</label>
                                     <input type="text" id="target_fields" placeholder="Computer Science, AI, Data Science"
-                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                           class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Max Yearly Budget ($ USD)</label>
+                                    <label class="block text-[11px] font-medium theme-muted-text mb-1">Max Yearly Budget ($ USD)</label>
                                     <input type="number" id="budget" placeholder="5000"
-                                           class="w-full px-3 py-2 text-xs rounded-xl bg-navy-900/90 border border-navy-700/80 text-white placeholder-gray-500 focus:border-amber-beacon focus:outline-none">
+                                           class="w-full px-3 py-2 text-xs rounded-xl theme-input placeholder-gray-400">
                                 </div>
                                 <div class="flex flex-col justify-end gap-2 pb-1">
-                                    <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
-                                        <input type="checkbox" id="needs_full_funding" class="rounded bg-navy-800 border-navy-700 text-amber-beacon focus:ring-amber-beacon">
+                                    <label class="flex items-center gap-2 text-xs theme-desc cursor-pointer">
+                                        <input type="checkbox" id="needs_full_funding" class="rounded text-amber-500 focus:ring-amber-500">
                                         <span>Must be Fully Funded</span>
                                     </label>
-                                    <label class="flex items-center gap-2 text-xs text-gray-400 hover:text-red-400 cursor-pointer transition-colors">
-                                        <input type="checkbox" id="chaos_mode" class="rounded bg-navy-800 border-navy-700 text-red-500 focus:ring-red-500">
+                                    <label class="flex items-center gap-2 text-xs theme-muted-text hover:text-red-500 cursor-pointer transition-colors">
+                                        <input type="checkbox" id="chaos_mode" class="rounded text-red-500 focus:ring-red-500">
                                         <span>🌊 Chaos Mode (Test auto-recovery)</span>
                                     </label>
                                 </div>
@@ -356,7 +453,7 @@
                     <!-- Big Primary Action Button -->
                     <div class="pt-2">
                         <button type="submit" id="run-btn"
-                                class="w-full py-3 rounded-xl font-display font-semibold text-sm sm:text-base text-navy-950 bg-gradient-to-r from-amber-beacon to-amber-glow hover:from-amber-glow hover:to-amber-beacon transition-all shadow-lg shadow-amber-beacon/20 hover:shadow-amber-beacon/30 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                                class="w-full py-3 rounded-xl font-display font-semibold text-sm sm:text-base text-navy-950 bg-gradient-to-r from-amber-400 to-amber-500 dark:from-amber-beacon dark:to-amber-glow hover:brightness-105 transition-all shadow-lg shadow-amber-500/20 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
                             <span>🏮</span> <span>Chart Education Route</span>
                         </button>
                     </div>
@@ -370,87 +467,90 @@
 
         <!-- ─── LIVE AGENT SWARM MONITOR (APPEARS DURING ACTIVE RUN) ─── -->
         <section id="live-agent-tracker" class="max-w-4xl mx-auto space-y-4 section-hidden">
-            <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl space-y-4">
+            <div class="glass-surface rounded-2xl p-5 space-y-4">
                 
-                <div class="flex items-center justify-between pb-2 border-b border-navy-800">
+                <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-main);">
                     <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-beacon animate-ping"></span>
-                        <h3 class="font-display font-semibold text-sm sm:text-base text-white">Autonomous Agent Swarm Active</h3>
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 dark:bg-amber-beacon animate-ping"></span>
+                        <h3 class="font-display font-semibold text-sm sm:text-base theme-title">Autonomous Agent Swarm Active</h3>
                     </div>
-                    <span class="text-xs font-mono text-gray-400" id="event-count">0 events</span>
+                    <span class="text-xs font-mono theme-muted-text" id="event-count">0 events</span>
                 </div>
 
                 <!-- Sleek 9-Agent Horizontal Stepper -->
                 <div class="grid grid-cols-3 sm:grid-cols-9 gap-1.5" id="agent-pipeline-overview">
-                    <div id="pip-CartographerAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-CartographerAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🗺️</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Cartographer</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Cartographer</div>
                     </div>
-                    <div id="pip-NavigatorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-NavigatorAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🧭</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Navigator</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Navigator</div>
                     </div>
-                    <div id="pip-ScoutAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-ScoutAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🔍</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Scout</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Scout</div>
                     </div>
-                    <div id="pip-SurveyorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-SurveyorAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">📐</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Surveyor</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Surveyor</div>
                     </div>
-                    <div id="pip-BeaconAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-BeaconAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🏮</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Beacon</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Beacon</div>
                     </div>
-                    <div id="pip-SkepticAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-SkepticAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🔬</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Skeptic</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Skeptic</div>
                     </div>
-                    <div id="pip-PathfinderAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-PathfinderAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🛤️</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Pathfinder</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Pathfinder</div>
                     </div>
-                    <div id="pip-ScribeAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-ScribeAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">✍️</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Scribe</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Scribe</div>
                     </div>
-                    <div id="pip-AuditorAgent" class="p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all">
+                    <div id="pip-AuditorAgent" class="p-2 rounded-xl border text-center transition-all theme-subtle-bg">
                         <div class="text-xs">🔎</div>
-                        <div class="text-[10px] font-medium text-gray-300 truncate">Auditor</div>
+                        <div class="text-[10px] font-medium theme-title truncate">Auditor</div>
                     </div>
                 </div>
 
                 <!-- Latest Agent Status Banner -->
-                <div id="latest-status-banner" class="p-3 rounded-xl bg-navy-900/90 border border-navy-700/80 flex items-center gap-3">
+                <div id="latest-status-banner" class="p-3 rounded-xl border flex items-center gap-3 theme-subtle-bg">
                     <span class="text-lg">🤖</span>
                     <div class="flex-1 truncate">
-                        <span class="text-xs font-semibold text-amber-beacon" id="current-agent-label">Harbor Master</span>
-                        <p class="text-xs text-gray-300 truncate" id="current-agent-msg">Launching multi-agent pipeline...</p>
+                        <span class="text-xs font-semibold text-amber-600 dark:text-amber-beacon" id="current-agent-label">Harbor Master</span>
+                        <p class="text-xs theme-desc truncate" id="current-agent-msg">Launching multi-agent pipeline...</p>
                     </div>
                 </div>
 
                 <!-- Collapsible Inspection Drawers (Debates & Full Terminal Log) -->
                 <div class="pt-1">
-                    <div class="flex gap-2 border-b border-navy-800 pb-2">
-                        <button type="button" onclick="toggleFeedTab('logs')" id="feed-tab-logs" class="text-xs px-3 py-1 rounded-lg bg-navy-800 text-white font-medium">
+                    <div class="flex gap-2 border-b pb-2" style="border-color: var(--border-main);">
+                        <button type="button" onclick="toggleFeedTab('logs')" id="feed-tab-logs"
+                                class="text-xs px-3 py-1 rounded-lg font-medium transition-colors"
+                                style="background-color: var(--bg-card-subtle); color: var(--text-heading);">
                             Live Terminal Log
                         </button>
-                        <button type="button" onclick="toggleFeedTab('debates')" id="feed-tab-debates" class="text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors">
+                        <button type="button" onclick="toggleFeedTab('debates')" id="feed-tab-debates"
+                                class="text-xs px-3 py-1 rounded-lg theme-muted-text hover:text-amber-600 dark:hover:text-amber-beacon transition-colors">
                             ⚔️ Skeptic Debate Feed
                         </button>
                     </div>
 
                     <!-- Terminal Log -->
                     <div id="feed-view-logs" class="pt-3">
-                        <div id="event-log" class="h-36 overflow-y-auto space-y-1 text-[11px] font-mono p-3 rounded-xl bg-navy-950/80 border border-navy-900">
-                            <p class="text-gray-500">System standby. Awaiting launch...</p>
+                        <div id="event-log" class="h-36 overflow-y-auto space-y-1 text-[11px] font-mono p-3 rounded-xl border theme-subtle-bg">
+                            <p class="theme-muted-text">System standby. Awaiting launch...</p>
                         </div>
                     </div>
 
                     <!-- Debate Feed -->
                     <div id="feed-view-debates" class="pt-3 section-hidden">
-                        <div id="debate-strip" class="h-36 overflow-y-auto space-y-2 text-xs p-3 rounded-xl bg-navy-950/80 border border-navy-900">
-                            <p class="text-gray-500 italic">No debate arguments recorded yet.</p>
+                        <div id="debate-strip" class="h-36 overflow-y-auto space-y-2 text-xs p-3 rounded-xl border theme-subtle-bg">
+                            <p class="theme-muted-text italic">No debate arguments recorded yet.</p>
                         </div>
                     </div>
                 </div>
@@ -465,15 +565,15 @@
         <section id="results-workspace" class="max-w-5xl mx-auto space-y-5 section-hidden">
             
             <!-- 1. Profile Summary Card -->
-            <div id="profile-section" class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl section-hidden">
+            <div id="profile-section" class="glass-surface rounded-2xl p-5 border shadow-xl section-hidden">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-beacon/15 border border-amber-beacon/30 flex items-center justify-center text-xl">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-xl">
                             🎓
                         </div>
                         <div>
-                            <h3 class="font-display font-bold text-base text-white" id="summary-name">Student Profile</h3>
-                            <p class="text-xs text-gray-400" id="summary-subtitle">B.Tech Computer Science</p>
+                            <h3 class="font-display font-bold text-base theme-title" id="summary-name">Student Profile</h3>
+                            <p class="text-xs theme-muted-text" id="summary-subtitle">B.Tech Computer Science</p>
                         </div>
                     </div>
 
@@ -486,30 +586,30 @@
             </div>
 
             <!-- 2. Modern Segmented Tab Navigation -->
-            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 border-b border-navy-800">
+            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 border-b" style="border-color: var(--border-main);">
                 <div class="flex items-center gap-1.5 min-w-max">
                     <button type="button" onclick="switchResultsTab('matches')" id="tab-matches"
                             class="tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-1.5">
                         <span>🏆</span> <span>Top Matches</span>
                     </button>
                     <button type="button" onclick="switchResultsTab('map')" id="tab-map"
-                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5">
                         <span>🗺️</span> <span>World Map</span>
                     </button>
                     <button type="button" onclick="switchResultsTab('sop')" id="tab-sop"
-                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5">
                         <span>📝</span> <span>SOP Draft</span>
                     </button>
                     <button type="button" onclick="switchResultsTab('roadmap')" id="tab-roadmap"
-                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5">
                         <span>🗓️</span> <span>Roadmap & .ICS</span>
                     </button>
                     <button type="button" onclick="switchResultsTab('whatif')" id="tab-whatif"
-                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5">
                         <span>🔮</span> <span>What-If Simulator</span>
                     </button>
                     <button type="button" onclick="switchResultsTab('table')" id="tab-table"
-                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5">
+                            class="tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5">
                         <span>📋</span> <span>Evidence Ledger</span>
                     </button>
                 </div>
@@ -519,8 +619,8 @@
             <div id="tab-content-matches" class="space-y-4">
                 <div id="results-section">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs text-gray-400" id="top-beacons-count">Top Matches</span>
-                        <span class="text-xs text-amber-beacon font-medium">True Cost calculated in Indian Rupee (₹)</span>
+                        <span class="text-xs theme-muted-text" id="top-beacons-count">Top Matches</span>
+                        <span class="text-xs font-medium text-amber-600 dark:text-amber-beacon">True Cost calculated in Indian Rupee (₹)</span>
                     </div>
                     <div id="results-cards" class="space-y-3.5"></div>
                 </div>
@@ -528,56 +628,56 @@
 
             <!-- TAB 2: WORLD MAP -->
             <div id="tab-content-map" class="space-y-4 section-hidden">
-                <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl" id="map-section">
+                <div class="glass-surface rounded-2xl p-5" id="map-section">
                     <div class="flex items-center justify-between mb-3">
                         <div>
-                            <h3 class="font-display font-semibold text-base text-white">Geographic Opportunity Distribution</h3>
-                            <p class="text-xs text-gray-400">Plotted by institution location and scored by fit</p>
+                            <h3 class="font-display font-semibold text-base theme-title">Geographic Opportunity Distribution</h3>
+                            <p class="text-xs theme-muted-text">Plotted by institution location and scored by fit</p>
                         </div>
                         <div class="flex items-center gap-3 text-xs">
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-400"></span> 70+ Fit</span>
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-beacon"></span> 50-69</span>
-                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> &lt;50</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span> 70+ Fit</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 dark:bg-amber-beacon"></span> 50-69</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> &lt;50</span>
                         </div>
                     </div>
-                    <div id="merit-map" class="border border-navy-800"></div>
+                    <div id="merit-map" class="border" style="border-color: var(--border-main);"></div>
                 </div>
             </div>
 
             <!-- TAB 3: STATEMENT OF PURPOSE STUDIO -->
             <div id="tab-content-sop" class="space-y-4 section-hidden">
-                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="sop-section">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6" id="sop-section">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                         <div>
-                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <h3 class="font-display font-semibold text-base theme-title flex items-center gap-2">
                                 <span>📝</span> <span>Fact-Grounded Statement of Purpose (SOP)</span>
                             </h3>
-                            <p class="text-xs text-gray-400">Drafted strictly from candidate credentials with zero hallucinated honors</p>
+                            <p class="text-xs theme-muted-text">Drafted strictly from candidate credentials with zero hallucinated honors</p>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 bg-navy-900/80 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1.5">
+                            <button onclick="copySOP()" class="text-xs px-3 py-1.5 rounded-xl border theme-subtle-bg theme-title hover:text-amber-600 dark:hover:text-amber-beacon transition-all flex items-center gap-1.5">
                                 <span>📋</span> <span>Copy SOP</span>
                             </button>
-                            <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-lg border border-navy-700 bg-navy-900/80 text-gray-300 hover:text-amber-beacon hover:border-amber-beacon/50 transition-all flex items-center gap-1.5">
+                            <button onclick="downloadSOP()" class="text-xs px-3 py-1.5 rounded-xl border theme-subtle-bg theme-title hover:text-amber-600 dark:hover:text-amber-beacon transition-all flex items-center gap-1.5">
                                 <span>💾</span> <span>Download .txt</span>
                             </button>
                         </div>
                     </div>
-                    <div id="sop-content" class="text-sm leading-relaxed text-gray-300"></div>
+                    <div id="sop-content" class="text-sm leading-relaxed theme-desc"></div>
                 </div>
             </div>
 
             <!-- TAB 4: PATHFINDER ROADMAP & CALENDAR -->
             <div id="tab-content-roadmap" class="space-y-4 section-hidden">
-                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="roadmap-section">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6" id="roadmap-section">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                         <div>
-                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <h3 class="font-display font-semibold text-base theme-title flex items-center gap-2">
                                 <span>🗓️</span> <span>Pathfinder Gap-Closing Roadmap</span>
                             </h3>
-                            <p class="text-xs text-gray-400">Chronological timeline of tests, documents, and application deadlines</p>
+                            <p class="text-xs theme-muted-text">Chronological timeline of tests, documents, and application deadlines</p>
                         </div>
-                        <button onclick="downloadCalendar()" class="text-xs px-3.5 py-1.5 rounded-lg border border-amber-beacon/40 bg-amber-beacon/15 text-amber-beacon hover:bg-amber-beacon hover:text-navy-950 transition-all flex items-center gap-1.5 font-medium">
+                        <button onclick="downloadCalendar()" class="text-xs px-3.5 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-beacon hover:bg-amber-500 hover:text-white transition-all flex items-center gap-1.5 font-medium">
                             <span>📅</span> <span>Sync to Calendar (.ics)</span>
                         </button>
                     </div>
@@ -587,44 +687,44 @@
 
             <!-- TAB 5: WHAT-IF SCENARIO SIMULATOR -->
             <div id="tab-content-whatif" class="space-y-4 section-hidden">
-                <div class="glass-surface rounded-2xl p-5 sm:p-6 border border-navy-800 shadow-xl" id="whatif-section">
+                <div class="glass-surface rounded-2xl p-5 sm:p-6" id="whatif-section">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
                         <div>
-                            <h3 class="font-display font-semibold text-base text-white flex items-center gap-2">
+                            <h3 class="font-display font-semibold text-base theme-title flex items-center gap-2">
                                 <span>🔮</span> <span>What-If Scenario Simulator</span>
                             </h3>
-                            <p class="text-xs text-gray-400">Instant pure-Python re-scoring with zero web-scraping latency</p>
+                            <p class="text-xs theme-muted-text">Instant pure-Python re-scoring with zero web-scraping latency</p>
                         </div>
-                        <button onclick="runWhatIf()" class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-amber-beacon hover:bg-amber-glow text-navy-950 transition-all flex items-center gap-1.5 shadow-md">
+                        <button onclick="runWhatIf()" class="px-4 py-1.5 text-xs font-semibold rounded-xl bg-amber-500 dark:bg-amber-beacon text-navy-950 hover:brightness-105 transition-all flex items-center gap-1.5 shadow-md">
                             <span>⚡</span> <span>Recalculate Fit</span>
                         </button>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">IELTS Score</label>
+                            <label class="block text-xs theme-muted-text mb-1">IELTS Score</label>
                             <input type="number" id="wi-ielts" step="0.5" min="0" max="9" placeholder="7.5"
-                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl theme-input">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">GRE Score</label>
+                            <label class="block text-xs theme-muted-text mb-1">GRE Score</label>
                             <input type="number" id="wi-gre" min="260" max="340" placeholder="325"
-                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl theme-input">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">GPA (4.0 Scale)</label>
+                            <label class="block text-xs theme-muted-text mb-1">GPA (4.0 Scale)</label>
                             <input type="number" id="wi-cgpa" step="0.05" min="0" max="4" placeholder="3.8"
-                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl theme-input">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Add Publication</label>
+                            <label class="block text-xs theme-muted-text mb-1">Add Publication</label>
                             <input type="text" id="wi-pub" placeholder="IEEE / NeurIPS"
-                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl theme-input">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Target Countries</label>
+                            <label class="block text-xs theme-muted-text mb-1">Target Countries</label>
                             <input type="text" id="wi-countries" placeholder="UK, Sweden"
-                                   class="w-full px-3 py-1.5 text-xs rounded-xl bg-navy-900 border border-navy-700 text-white focus:border-amber-beacon focus:outline-none">
+                                   class="w-full px-3 py-1.5 text-xs rounded-xl theme-input">
                         </div>
                     </div>
 
@@ -634,17 +734,17 @@
 
             <!-- TAB 6: FULL DISCOVERED TABLE & EVIDENCE LEDGER -->
             <div id="tab-content-table" class="space-y-4 section-hidden">
-                <div class="glass-surface rounded-2xl p-5 border border-navy-800 shadow-xl" id="table-section">
+                <div class="glass-surface rounded-2xl p-5" id="table-section">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h3 class="font-display font-semibold text-base text-white">Full Evidence Ledger & Discovered Candidates</h3>
-                            <p class="text-xs text-gray-400">All 10+ discovered programs evaluated by Skeptic Red-Team</p>
+                            <h3 class="font-display font-semibold text-base theme-title">Full Evidence Ledger & Discovered Candidates</h3>
+                            <p class="text-xs theme-muted-text">All 10+ discovered programs evaluated by Skeptic Red-Team</p>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left" id="opportunities-table">
                             <thead>
-                                <tr class="text-gray-400 border-b border-navy-800 pb-2">
+                                <tr class="border-b pb-2 theme-muted-text" style="border-color: var(--border-main);">
                                     <th class="pb-2.5 pr-3">#</th>
                                     <th class="pb-2.5 pr-3">Program / Award</th>
                                     <th class="pb-2.5 pr-3">Institution</th>
@@ -669,27 +769,28 @@
     </main>
 
     <!-- ─── REPLAY RUNS MODAL ─── -->
-    <div id="replay-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 section-hidden">
-        <div class="glass-surface rounded-2xl p-6 max-w-lg w-full border border-navy-700 shadow-2xl animate-slide-up">
-            <div class="flex items-center justify-between mb-3 pb-2 border-b border-navy-800">
-                <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
-                    <span class="text-amber-beacon">↻</span> Saved Route Replay
+    <div id="replay-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 section-hidden">
+        <div class="glass-surface rounded-2xl p-6 max-w-lg w-full animate-slide-up">
+            <div class="flex items-center justify-between mb-3 pb-2 border-b" style="border-color: var(--border-main);">
+                <h3 class="font-display font-bold text-base theme-title flex items-center gap-2">
+                    <span class="text-amber-500 dark:text-amber-beacon">↻</span> Saved Route Replay
                 </h3>
-                <button onclick="closeReplayModal()" class="text-gray-400 hover:text-white text-base">✕</button>
+                <button onclick="closeReplayModal()" class="theme-muted-text hover:text-red-500 text-base">✕</button>
             </div>
-            <p class="text-xs text-gray-400 mb-4">Select any benchmark or previous run from disk to immediately inspect verified results:</p>
+            <p class="text-xs theme-muted-text mb-4">Select any benchmark or previous run from disk to immediately inspect verified results:</p>
             <div id="runs-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                <p class="text-xs text-gray-500">Loading saved runs...</p>
+                <p class="text-xs theme-muted-text">Loading saved runs...</p>
             </div>
         </div>
     </div>
 
-    <!-- ─── MINIMAL FOOTER ─── -->
-    <footer class="border-t border-navy-900 py-4 bg-navy-950/80">
-        <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
+    <!-- ─── FOOTER ─── -->
+    <footer class="border-t py-4 transition-colors"
+            style="background-color: var(--bg-header); border-color: var(--border-main);">
+        <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs theme-muted-text flex flex-wrap items-center justify-between gap-2">
             <span>MeritMap · TetraNoodle AI Hackathon 2026</span>
             <div class="flex items-center gap-4">
-                <span class="text-gray-400">FX Rates: 1 USD = ₹84 · 1 EUR = ₹91 · 1 CAD = ₹61 · 1 SGD = ₹62</span>
+                <span>FX: 1 USD = ₹84 · 1 EUR = ₹91 · 1 CAD = ₹61 · 1 SGD = ₹62</span>
             </div>
         </div>
     </footer>
@@ -703,6 +804,7 @@
     let eventSource = null;
     let eventCount = 0;
     let map = null;
+    let tileLayer = null;
     let markers = [];
     let lastRunResult = null;
 
@@ -720,6 +822,60 @@
         PathfinderAgent: 'Pathfinder', ScribeAgent: 'Scribe',
         AuditorAgent: 'Auditor', HarborMaster: 'Harbor Master',
     };
+
+    // ─── THEME INITIALIZATION & SWITCHER ───
+    function initTheme() {
+        const savedTheme = localStorage.getItem('meritmap-theme');
+        const isDark = savedTheme ? savedTheme === 'dark' : true; // Default to dark mode
+        applyTheme(isDark);
+    }
+
+    function toggleTheme() {
+        const isCurrentlyDark = document.documentElement.classList.contains('dark');
+        applyTheme(!isCurrentlyDark);
+    }
+
+    function applyTheme(isDark) {
+        const root = document.documentElement;
+        const icon = document.getElementById('theme-icon');
+        const text = document.getElementById('theme-text');
+
+        if (isDark) {
+            root.classList.add('dark');
+            root.classList.remove('light');
+            localStorage.setItem('meritmap-theme', 'dark');
+            if (icon) icon.textContent = '☀️';
+            if (text) text.textContent = 'Light Mode';
+        } else {
+            root.classList.remove('dark');
+            root.classList.add('light');
+            localStorage.setItem('meritmap-theme', 'light');
+            if (icon) icon.textContent = '🌙';
+            if (text) text.textContent = 'Dark Mode';
+        }
+
+        // Update map tile layer if map exists
+        if (map) {
+            updateMapTiles(isDark);
+        }
+    }
+
+    function updateMapTiles(isDark) {
+        if (!map) return;
+        if (tileLayer) map.removeLayer(tileLayer);
+        
+        const tileUrl = isDark
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+        tileLayer = L.tileLayer(tileUrl, {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            maxZoom: 18,
+        }).addTo(map);
+    }
+
+    // Initialize Theme immediately on script evaluation
+    initTheme();
 
     // Form submit
     document.getElementById('run-form').addEventListener('submit', async (e) => {
@@ -745,21 +901,29 @@
         const label = document.getElementById(labelId);
         if (fileInput.files.length > 0) {
             label.textContent = `✓ ${fileInput.files[0].name}`;
-            label.className = 'text-[10px] text-green-400 font-medium truncate max-w-[120px]';
+            label.className = 'text-[10px] text-green-500 font-medium truncate max-w-[120px]';
         } else {
             label.textContent = 'Optional';
-            label.className = 'text-[10px] text-gray-500';
+            label.className = 'text-[10px] theme-muted-text';
         }
     }
 
     function toggleFeedTab(tab) {
         const isLogs = tab === 'logs';
-        document.getElementById('feed-tab-logs').className = isLogs 
-            ? 'text-xs px-3 py-1 rounded-lg bg-navy-800 text-white font-medium'
-            : 'text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors';
-        document.getElementById('feed-tab-debates').className = !isLogs 
-            ? 'text-xs px-3 py-1 rounded-lg bg-navy-800 text-amber-beacon font-medium'
-            : 'text-xs px-3 py-1 rounded-lg text-gray-400 hover:text-white transition-colors';
+        const tabLogs = document.getElementById('feed-tab-logs');
+        const tabDebates = document.getElementById('feed-tab-debates');
+
+        if (isLogs) {
+            tabLogs.style.backgroundColor = 'var(--bg-card-subtle)';
+            tabLogs.style.color = 'var(--text-heading)';
+            tabDebates.style.backgroundColor = 'transparent';
+            tabDebates.style.color = 'var(--text-muted)';
+        } else {
+            tabDebates.style.backgroundColor = 'var(--bg-card-subtle)';
+            tabDebates.style.color = 'var(--accent)';
+            tabLogs.style.backgroundColor = 'transparent';
+            tabLogs.style.color = 'var(--text-muted)';
+        }
         
         document.getElementById('feed-view-logs').classList.toggle('section-hidden', !isLogs);
         document.getElementById('feed-view-debates').classList.toggle('section-hidden', isLogs);
@@ -772,9 +936,9 @@
             const content = document.getElementById(`tab-content-${t}`);
             if (btn) {
                 if (t === tabName) {
-                    btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold border border-transparent transition-all flex items-center gap-1.5';
+                    btn.className = 'tab-btn active px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5';
                 } else {
-                    btn.className = 'tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-white border border-transparent transition-all flex items-center gap-1.5';
+                    btn.className = 'tab-btn px-3.5 py-2 rounded-xl text-xs font-semibold theme-muted-text hover:text-amber-600 dark:hover:text-white border border-transparent transition-all flex items-center gap-1.5';
                 }
             }
             if (content) {
@@ -952,7 +1116,7 @@
         const pip = document.getElementById(`pip-${agentId}`);
         if (pip) {
             if (event.type === 'start' || event.type === 'progress') {
-                pip.className = 'p-2 rounded-xl border border-amber-beacon bg-amber-beacon/20 text-center animate-pulse transition-all';
+                pip.className = 'p-2 rounded-xl border border-amber-500 bg-amber-500/20 text-center animate-pulse transition-all';
             } else if (event.type === 'done' || event.type === 'result') {
                 pip.className = 'p-2 rounded-xl border border-green-500/50 bg-green-500/10 text-center transition-all';
             }
@@ -966,22 +1130,22 @@
 
     function addLog(type, agent, message) {
         const log = document.getElementById('event-log');
-        if (log.querySelector('.text-gray-500')) {
+        if (log.querySelector('.theme-muted-text')) {
             log.innerHTML = '';
         }
 
         const colorMap = {
-            start: 'text-blue-400', progress: 'text-gray-300',
-            tool_call: 'text-purple-400', warning: 'text-amber-beacon',
-            recovered: 'text-green-400', debate: 'text-amber-beacon',
-            result: 'text-green-400', error: 'text-red-400',
-            done: 'text-emerald-400', audit: 'text-cyan-400',
+            start: 'text-blue-500', progress: 'theme-desc',
+            tool_call: 'text-purple-500', warning: 'text-amber-500',
+            recovered: 'text-green-500', debate: 'text-amber-500',
+            result: 'text-green-500', error: 'text-red-500',
+            done: 'text-emerald-500', audit: 'text-cyan-500',
         };
 
         const entry = document.createElement('div');
-        entry.className = `${colorMap[type] || 'text-gray-400'} py-0.5 leading-tight`;
+        entry.className = `${colorMap[type] || 'theme-muted-text'} py-0.5 leading-tight`;
         const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        entry.innerHTML = `<span class="text-gray-600">${time}</span> <span class="text-navy-300 font-semibold">[${agent}]</span> ${message}`;
+        entry.innerHTML = `<span class="opacity-60">${time}</span> <span class="font-semibold opacity-90">[${agent}]</span> ${message}`;
         log.appendChild(entry);
         log.scrollTop = log.scrollHeight;
     }
@@ -994,10 +1158,10 @@
 
         const isBeacon = event.agent === 'BeaconAgent';
         const msg = document.createElement('div');
-        msg.className = `p-2.5 rounded-xl text-xs ${isBeacon ? 'debate-beacon bg-amber-beacon/10' : 'debate-skeptic bg-red-500/10'}`;
+        msg.className = `p-2.5 rounded-xl text-xs ${isBeacon ? 'debate-beacon bg-amber-500/10' : 'debate-skeptic bg-red-500/10'}`;
         msg.innerHTML = `
-            <span class="font-bold ${isBeacon ? 'text-amber-beacon' : 'text-red-400'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
-            <span class="text-gray-200 ml-1">${event.message}</span>
+            <span class="font-bold ${isBeacon ? 'text-amber-500' : 'text-red-500'}">${isBeacon ? '🏮 Beacon' : '🔬 Skeptic'}:</span>
+            <span class="theme-desc ml-1">${event.message}</span>
         `;
         strip.appendChild(msg);
         strip.scrollTop = strip.scrollHeight;
@@ -1049,10 +1213,12 @@
 
         const badgesContainer = document.getElementById('summary-badges');
         badgesContainer.innerHTML = `
-            <span class="px-2.5 py-1 rounded-full bg-navy-800 text-amber-beacon border border-navy-700 font-mono font-medium">
+            <span class="px-2.5 py-1 rounded-full text-amber-600 dark:text-amber-beacon font-mono font-medium border"
+                  style="background-color: var(--bg-card-subtle); border-color: var(--border-main);">
                 CGPA: ${profile.cgpa || '8.2'} / ${profile.cgpa_scale || '10'}
             </span>
-            <span class="px-2.5 py-1 rounded-full bg-navy-800 text-gray-300 border border-navy-700">
+            <span class="px-2.5 py-1 rounded-full theme-desc border"
+                  style="background-color: var(--bg-card-subtle); border-color: var(--border-main);">
                 🎯 ${profile.target_countries?.slice(0, 3).join(', ') || 'Global'}
             </span>
         `;
@@ -1072,27 +1238,27 @@
             const cost = m.true_cost || {};
             const verdict = m.skeptic_verdict || 'survives';
 
-            const verdictBadge = verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+            const verdictBadge = verdict === 'rejected' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
                                 verdict === 'weakened' ? 'fog-badge' : 'verified-badge';
 
             return `
-                <div class="rounded-2xl p-5 border border-navy-800 bg-navy-900/70 hover:border-amber-beacon/50 transition-all shadow-md animate-slide-up" style="animation-delay: ${i * 0.05}s">
+                <div class="rounded-2xl p-5 border theme-subtle-bg transition-all shadow-md animate-slide-up" style="animation-delay: ${i * 0.05}s">
                     <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
                         <div class="flex-1 min-w-[240px]">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-beacon/15 text-amber-beacon border border-amber-beacon/30">#${i + 1} Best Fit</span>
-                                <span class="text-[11px] text-gray-400">${inst} · <strong>${country}</strong></span>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-beacon border border-amber-500/30">#${i + 1} Best Fit</span>
+                                <span class="text-[11px] theme-muted-text">${inst} · <strong>${country}</strong></span>
                             </div>
-                            <h4 class="font-display font-bold text-white text-base leading-snug">${name}</h4>
+                            <h4 class="font-display font-bold theme-title text-base leading-snug">${name}</h4>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-black ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</div>
-                            <div class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Fit Score</div>
+                            <div class="text-2xl font-black ${score >= 70 ? 'text-green-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'}">${score}</div>
+                            <div class="text-[10px] uppercase tracking-wider theme-muted-text font-semibold">Fit Score</div>
                         </div>
                     </div>
 
                     <!-- Breakdown bars -->
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 my-3 p-3 rounded-xl bg-navy-950/70 border border-navy-800 text-[11px]">
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 my-3 p-3 rounded-xl border text-[11px]" style="background-color: var(--bg-card); border-color: var(--border-main);">
                         ${renderScorePill('Academic Fit', breakdown.academic_fit, 25)}
                         ${renderScorePill('Field Match', breakdown.field_fit, 20)}
                         ${renderScorePill('Funding Match', breakdown.funding_fit, 20)}
@@ -1100,22 +1266,22 @@
                         ${renderScorePill('Deadline Feasibility', breakdown.deadline_feasibility, 10)}
                     </div>
 
-                    ${m.why_it_fits ? `<p class="text-xs text-gray-300 mb-3 leading-relaxed">${m.why_it_fits}</p>` : ''}
+                    ${m.why_it_fits ? `<p class="text-xs theme-desc mb-3 leading-relaxed">${m.why_it_fits}</p>` : ''}
 
                     <!-- True Cost Highlight in INR -->
-                    <div class="p-3 rounded-xl bg-navy-950/80 text-xs mb-3 flex flex-wrap items-center justify-between gap-2 border border-navy-800">
+                    <div class="p-3 rounded-xl text-xs mb-3 flex flex-wrap items-center justify-between gap-2 border" style="background-color: var(--bg-card); border-color: var(--border-main);">
                         <div class="flex items-center gap-2">
-                            <span class="text-gray-400">Estimated Family Out-of-Pocket:</span>
-                            <span class="font-bold ${cost.is_fully_funded ? 'text-green-400' : 'text-amber-beacon'}">
+                            <span class="theme-muted-text">Estimated Family Out-of-Pocket:</span>
+                            <span class="font-bold ${cost.is_fully_funded ? 'text-green-500' : 'text-amber-600 dark:text-amber-beacon'}">
                                 ${cost.is_fully_funded ? '✨ Fully Funded (₹0 Deficit)' : `~₹${Math.round(cost.out_of_pocket_yearly_inr || 0).toLocaleString()}/yr`}
                             </span>
                         </div>
-                        <span class="text-[11px] text-gray-500">Converted at official FX rates</span>
+                        <span class="text-[11px] theme-muted-text">Converted at official FX rates</span>
                     </div>
 
                     <div class="flex items-center justify-between pt-1 text-xs">
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] ${verdictBadge}">Skeptic Red-Team: ${verdict}</span>
-                        ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-amber-beacon hover:underline flex items-center gap-1 font-medium">Official Program Page →</a>` : ''}
+                        ${opp.url ? `<a href="${opp.url}" target="_blank" class="text-amber-600 dark:text-amber-beacon hover:underline flex items-center gap-1 font-medium">Official Program Page →</a>` : ''}
                     </div>
                 </div>
             `;
@@ -1125,11 +1291,11 @@
     function renderScorePill(label, value, max) {
         const val = value || 0;
         const pct = max > 0 ? (val / max * 100) : 0;
-        const color = pct >= 70 ? 'text-green-400' : pct >= 40 ? 'text-amber-beacon' : 'text-red-400';
+        const color = pct >= 70 ? 'text-green-500' : pct >= 40 ? 'text-amber-500' : 'text-red-500';
         return `
             <div>
-                <span class="text-gray-500 text-[10px] block truncate">${label}</span>
-                <span class="font-bold ${color}">${val}</span><span class="text-gray-500 text-[10px]">/${max}</span>
+                <span class="theme-muted-text text-[10px] block truncate">${label}</span>
+                <span class="font-bold ${color}">${val}</span><span class="theme-muted-text text-[10px]">/${max}</span>
             </div>
         `;
     }
@@ -1137,10 +1303,8 @@
     function showMap(matches) {
         if (!map) {
             map = L.map('merit-map').setView([45, 10], 2);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO',
-                maxZoom: 18,
-            }).addTo(map);
+            const isDark = document.documentElement.classList.contains('dark');
+            updateMapTiles(isDark);
         }
 
         markers.forEach(m => map.removeLayer(m));
@@ -1176,9 +1340,9 @@
             const marker = L.marker([jitterLat, jitterLng], { icon }).addTo(map);
             marker.bindPopup(`
                 <div style="font-family:Inter,sans-serif;min-width:210px;padding:4px">
-                    <h4 style="font-weight:700;margin:0 0 4px;font-size:13px">${name}</h4>
-                    <p style="margin:0;color:#666;font-size:11px">${opp.institution?.value || country}</p>
-                    <p style="margin:6px 0 0;font-size:12px">Fit Score: <strong style="color:${color}">${score}</strong>/100</p>
+                    <h4 style="font-weight:700;margin:0 0 4px;font-size:13px;color:#0f172a">${name}</h4>
+                    <p style="margin:0;color:#64748b;font-size:11px">${opp.institution?.value || country}</p>
+                    <p style="margin:6px 0 0;font-size:12px;color:#334155">Fit Score: <strong style="color:${color}">${score}</strong>/100</p>
                 </div>
             `);
             markers.push(marker);
@@ -1203,17 +1367,17 @@
             const verdict = m.skeptic_verdict || 'survives';
 
             const verdictBadge = verdict === 'survives' ? 'verified-badge' :
-                                verdict === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'fog-badge';
+                                verdict === 'rejected' ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'fog-badge';
 
             return `
-                <tr class="border-b border-navy-800/60 hover:bg-navy-800/40 transition-colors">
-                    <td class="py-2.5 pr-3 text-gray-500">${i + 1}</td>
-                    <td class="py-2.5 pr-3 text-white font-medium">${name}</td>
-                    <td class="py-2.5 pr-3 text-gray-300">${inst}</td>
-                    <td class="py-2.5 pr-3 text-gray-300">${country}</td>
-                    <td class="py-2.5 pr-3 font-bold ${score >= 70 ? 'text-green-400' : score >= 50 ? 'text-amber-beacon' : 'text-red-400'}">${score}</td>
-                    <td class="py-2.5 pr-3 text-gray-300">${cost != null ? `₹${Math.round(cost).toLocaleString()}` : '—'}</td>
-                    <td class="py-2.5 pr-3 text-gray-400">${deadline}</td>
+                <tr class="border-b transition-colors hover:opacity-90" style="border-color: var(--border-main);">
+                    <td class="py-2.5 pr-3 theme-muted-text">${i + 1}</td>
+                    <td class="py-2.5 pr-3 theme-title font-medium">${name}</td>
+                    <td class="py-2.5 pr-3 theme-desc">${inst}</td>
+                    <td class="py-2.5 pr-3 theme-desc">${country}</td>
+                    <td class="py-2.5 pr-3 font-bold ${score >= 70 ? 'text-green-500' : score >= 50 ? 'text-amber-500' : 'text-red-500'}">${score}</td>
+                    <td class="py-2.5 pr-3 theme-desc">${cost != null ? `₹${Math.round(cost).toLocaleString()}` : '—'}</td>
+                    <td class="py-2.5 pr-3 theme-muted-text">${deadline}</td>
                     <td class="py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] ${verdictBadge}">${verdict}</span></td>
                 </tr>
             `;
@@ -1223,25 +1387,25 @@
     function showRoadmap(roadmap) {
         const container = document.getElementById('roadmap-timeline');
         container.innerHTML = (roadmap.tasks || []).map((task, i) => {
-            const priorityBadge = task.priority === 'high' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                                 task.priority === 'medium' ? 'bg-amber-beacon/20 text-amber-beacon border border-amber-beacon/30' :
-                                 'bg-navy-800 text-gray-400';
+            const priorityBadge = task.priority === 'high' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                                 task.priority === 'medium' ? 'bg-amber-500/20 text-amber-600 dark:text-amber-beacon border border-amber-500/30' :
+                                 'theme-subtle-bg theme-muted-text';
 
             return `
                 <div class="flex gap-3 animate-slide-up" style="animation-delay: ${i * 0.04}s">
                     <div class="flex flex-col items-center">
-                        <div class="w-3 h-3 rounded-full bg-amber-beacon mt-1.5"></div>
-                        ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1 bg-navy-800"></div>' : ''}
+                        <div class="w-3 h-3 rounded-full bg-amber-500 dark:bg-amber-beacon mt-1.5"></div>
+                        ${i < roadmap.tasks.length - 1 ? '<div class="w-0.5 flex-1" style="background-color: var(--border-main);"></div>' : ''}
                     </div>
                     <div class="flex-1 pb-3">
-                        <div class="rounded-xl p-3.5 border border-navy-800 bg-navy-900/70">
+                        <div class="rounded-xl p-3.5 border theme-subtle-bg">
                             <div class="flex items-center justify-between mb-1">
-                                <h4 class="font-medium text-xs sm:text-sm text-white">${task.title}</h4>
-                                ${task.due_date ? `<span class="text-xs text-amber-beacon font-mono font-medium">${task.due_date}</span>` : ''}
+                                <h4 class="font-medium text-xs sm:text-sm theme-title">${task.title}</h4>
+                                ${task.due_date ? `<span class="text-xs text-amber-600 dark:text-amber-beacon font-mono font-medium">${task.due_date}</span>` : ''}
                             </div>
-                            <p class="text-xs text-gray-300 mb-2 leading-relaxed">${task.description}</p>
+                            <p class="text-xs theme-desc mb-2 leading-relaxed">${task.description}</p>
                             <div class="flex gap-2">
-                                <span class="text-[10px] px-2 py-0.5 rounded bg-navy-800 text-gray-400">${task.category}</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded border" style="background-color: var(--bg-card); border-color: var(--border-main); color: var(--text-muted);">${task.category}</span>
                                 <span class="text-[10px] px-2 py-0.5 rounded ${priorityBadge}">${task.priority} priority</span>
                             </div>
                         </div>
@@ -1254,15 +1418,15 @@
     function showSOP(sop) {
         const div = document.getElementById('sop-content');
         div.innerHTML = `
-            <div class="mb-3 p-3 rounded-xl bg-navy-950/80 border border-navy-800 flex items-center justify-between">
-                <span class="text-xs text-gray-400">Target Opportunity: </span>
-                <span class="text-xs text-amber-beacon font-semibold">${sop.target_opportunity}</span>
+            <div class="mb-3 p-3 rounded-xl border flex items-center justify-between" style="background-color: var(--bg-card-subtle); border-color: var(--border-main);">
+                <span class="text-xs theme-muted-text">Target Opportunity: </span>
+                <span class="text-xs text-amber-600 dark:text-amber-beacon font-semibold">${sop.target_opportunity}</span>
             </div>
-            <div class="whitespace-pre-wrap text-xs leading-relaxed text-gray-200 p-4 rounded-xl bg-navy-950/70 border border-navy-800 font-sans">${sop.sop_text}</div>
+            <div class="whitespace-pre-wrap text-xs leading-relaxed theme-desc p-4 rounded-xl border font-sans" style="background-color: var(--bg-card); border-color: var(--border-main);">${sop.sop_text}</div>
             ${sop.document_checklist?.length ? `
-                <div class="mt-4 p-3.5 rounded-xl border border-navy-800 bg-navy-950/50">
-                    <h4 class="text-xs font-semibold text-white mb-2">📋 Verified Document Checklist</h4>
-                    <ul class="space-y-1.5">${sop.document_checklist.map(d => `<li class="text-xs text-gray-300 flex items-center gap-2"><span class="text-green-400">☑</span>${d}</li>`).join('')}</ul>
+                <div class="mt-4 p-3.5 rounded-xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-main);">
+                    <h4 class="text-xs font-semibold theme-title mb-2">📋 Verified Document Checklist</h4>
+                    <ul class="space-y-1.5">${sop.document_checklist.map(d => `<li class="text-xs theme-desc flex items-center gap-2"><span class="text-green-500">☑</span>${d}</li>`).join('')}</ul>
                 </div>
             ` : ''}
         `;
@@ -1316,16 +1480,16 @@
     function showWhatIfResults(matches) {
         const div = document.getElementById('whatif-results');
         if (!matches?.length) {
-            div.innerHTML = '<p class="text-gray-500 text-xs">No opportunities affected by these parameters.</p>';
+            div.innerHTML = '<p class="theme-muted-text text-xs">No opportunities affected by these parameters.</p>';
             return;
         }
 
         div.innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 ${matches.map((m, i) => `
-                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-navy-900 border border-navy-800 text-xs">
-                        <span class="text-white truncate pr-2">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || 'Opportunity'}</span>
-                        <span class="font-bold px-2 py-0.5 rounded ${m.fit_score >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-amber-beacon/20 text-amber-beacon'}">${m.fit_score}</span>
+                    <div class="flex items-center justify-between p-2.5 rounded-xl border text-xs" style="background-color: var(--bg-card); border-color: var(--border-main);">
+                        <span class="theme-title truncate pr-2">${i + 1}. ${m.opportunity?.name?.value || m.opportunity?.name || 'Opportunity'}</span>
+                        <span class="font-bold px-2 py-0.5 rounded ${m.fit_score >= 70 ? 'bg-green-500/20 text-green-500' : 'bg-amber-500/20 text-amber-500'}">${m.fit_score}</span>
                     </div>
                 `).join('')}
             </div>
@@ -1340,26 +1504,27 @@
     async function openReplayModal() {
         document.getElementById('replay-modal').classList.remove('section-hidden');
         const listEl = document.getElementById('runs-list');
-        listEl.innerHTML = '<p class="text-xs text-gray-500">Fetching saved runs...</p>';
+        listEl.innerHTML = '<p class="text-xs theme-muted-text">Fetching saved runs...</p>';
         try {
             const resp = await fetch('/api/runs');
             const data = await resp.json();
             if (!data.runs?.length) {
-                listEl.innerHTML = '<p class="text-xs text-gray-400">No saved runs found on disk.</p>';
+                listEl.innerHTML = '<p class="text-xs theme-muted-text">No saved runs found on disk.</p>';
                 return;
             }
             listEl.innerHTML = data.runs.map(r => `
                 <div onclick="selectSavedRun('${r.run_id}')"
-                     class="p-3 rounded-xl bg-navy-900 hover:bg-navy-800 border border-navy-800 hover:border-amber-beacon/50 cursor-pointer flex items-center justify-between transition-all">
+                     class="p-3 rounded-xl border cursor-pointer flex items-center justify-between transition-all"
+                     style="background-color: var(--bg-card); border-color: var(--border-main);">
                     <div>
-                        <span class="text-xs font-semibold text-white block">${r.profile_name || 'Anonymous Student'}</span>
-                        <span class="text-[10px] font-mono text-gray-400">${r.run_id}</span>
+                        <span class="text-xs font-semibold theme-title block">${r.profile_name || 'Anonymous Student'}</span>
+                        <span class="text-[10px] font-mono theme-muted-text">${r.run_id}</span>
                     </div>
-                    <span class="text-[10px] px-2 py-0.5 rounded-full ${r.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-navy-700 text-gray-400'}">${r.status}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full ${r.status === 'completed' ? 'bg-green-500/20 text-green-500' : 'theme-subtle-bg theme-muted-text'}">${r.status}</span>
                 </div>
             `).join('');
         } catch (err) {
-            listEl.innerHTML = '<p class="text-xs text-red-400">Failed to load runs.</p>';
+            listEl.innerHTML = '<p class="text-xs text-red-500">Failed to load runs.</p>';
         }
     }
 
@@ -1391,7 +1556,7 @@
         Object.keys(AGENT_NAMES).forEach(agent => {
             const pip = document.getElementById(`pip-${agent}`);
             if (pip) {
-                pip.className = 'p-2 rounded-xl border border-navy-800 bg-navy-900/60 text-center transition-all';
+                pip.className = 'p-2 rounded-xl border text-center transition-all theme-subtle-bg';
             }
         });
 
